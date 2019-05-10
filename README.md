@@ -1,5 +1,5 @@
 # BOTTLEit-Stranger-Chat-App
-UDACITY nanodegree project
+Send a message in a bottle
 <br/>
 <br/>
 <img align="left" width="225" height="400" src="screenshots/Screenshot_2019-04-10-17-57-11.png" />
