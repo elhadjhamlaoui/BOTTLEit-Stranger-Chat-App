@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true"
+        android:color="@color/cardview_light_background"
+        >
+
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+            <stroke
+                android:color="@color/grey_200"
+                android:width="2dp"
+                android:dashGap="3dp"
+                android:dashWidth="10dp"
+                />
+
+
+            <corners
+                android:radius="10dp"
+                />
+
+        </shape>
+
+    </item>
+
+    <item android:state_pressed="false">
+
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+            <stroke
+                android:color="@color/grey_200"
+                android:width="2dp"
+                android:dashGap="3dp"
+                android:dashWidth="10dp"
+                />
+            <corners
+                android:radius="10dp"
+                />
+
+        </shape>
+
+    </item>
+
+
+
+
+</selector>

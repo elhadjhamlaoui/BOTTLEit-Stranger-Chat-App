@@ -1,0 +1,108 @@
+<resources>
+
+    <string name="console_license_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArUds+XmtT2HXM4EA0i5iMUZCBkTbduWTkyc7P4lwggTqbbkF2S914wBCkXXyXQZx9jmIc0YOmEVMZiW0BrzK+xVhgVd4FBgLfPgwsxxVygRFSUFkY4Ouo6jktVBaae0rKzxKeY5+2eP1XiiBxB5PjJasGSttEAng7Vrck6Gn9nz4LTxLqrq6XKGHWBAsfYGYi8FbpO+QM0afM1zxEj4aAjKdxBNSrreMHdFTc8gF7TMFLZ4ae6vIE5IC2QGmMffZ1oiWMHTdTsilIrm7XylNYi3Z5VccgawNI0+Jptgl7gIgGbqovOKM4VaBDf1kdp0tuhzgyw8hG4fD1ij6+3AXGwIDAQAB</string>
+    <string name="facebook_app_id">2254324831256453</string>
+    <string name="fb_login_protocol_scheme">fb2254324831256453</string>
+
+    <string name="yandex_key">trnsl.1.1.20190401T212606Z.6ff8c8a484f44924.6450ad21d49c4ea1518526fdb8bad9a5199b4748</string>
+
+    <string name="app_name">BOTTLEit</string>
+    <string name="about">About</string>
+    <string name="login">LOGIN</string>
+    <string name="Username">Email</string>
+    <string name="Password">Password</string>
+    <string name="forgot_your_password">Forgot your password ?</string>
+    <string name="go">GO</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="register">REGISTER</string>
+    <string name="tooshort">write at least 20 characters</string>
+    <string name="keep">open</string>
+    <string name="release">throw</string>
+
+    <string name="removeFile">Remove File ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="logout">Logout</string>
+
+    <string name="uploadingvideo">Uploading Video...</string>
+    <string name="uploadingimage">Uploading Image...</string>
+    <string name="gender">Gender</string>
+    <string name="age">age</string>
+
+    <string name="male">male</string>
+    <string name="female">female</string>
+    <string name="nonbinary">non-binary</string>
+    <string name="cancel">cancel</string>
+
+    <string name="body_atleast">at least 30 characters</string>
+    <string name="title_atleast">at least 10 characters</string>
+
+    <string name="max_size_image">Max file size is 2 MB !</string>
+    <string name="ok">OK</string>
+    <string name="save">save</string>
+    <string name="wall_hint">express your self , you can talk about hobbies,passions,dreams , or anything!</string>
+
+    <string name="adventure_title">Give a title</string>
+    <string name="adventure_body">Write your Story today!</string>
+    <string name="send">send</string>
+
+    <string name="hint_username">Enter a new username</string>
+
+    <string name="world">World</string>
+    <string name="success">operation accomplished successfully</string>
+    <string name="error">an error occurred, please try again later</string>
+
+    <string name="interests_title">Up to 5 interests</string>
+    <string name="version">version 2.0</string>
+    <string name="location_text">if you changed country since your first registration, you can update your location</string>
+    <string name="country">Country</string>
+    <string name="find_me">Find me</string>
+
+    <string name="admob_app_id">ca-app-pub-5411690074381837~2067257380</string>
+    <string name="bottle_desc">Bottles allow you to send messages to Random people across the world!</string>
+    <string name="owl_desc">Owls allow you to share Stories with friends,followers and the entire world!</string>
+    <string name="feather_desc">With Feathers you can change fonts and the paper of your bottles and Stories.</string>
+    <string name="insufficient">you have an insufficient amount of gold!</string>
+    <string name="buy_gold">Buy gold</string>
+    <string name="languages_spoken">Languages spoken</string>
+    <string name="centers_of_interest">Centers of interest</string>
+    <string name="need_bottle">You need an empty bottle!</string>
+    <string name="buy_bottle">buy a bottle</string>
+    <string name="need_owl">You need an owl to send a new Story!</string>
+    <string name="buy_owl">buy an owl</string>
+    <string name="sent">sent </string>
+    <string name="ago"> ago</string>
+    <string name="still_floating">the ocean</string>
+    <string name="notifications_admin_channel_name">bottle</string>
+    <string name="select_gender">Select gender</string>
+    <string name="my_adventures">My Stories</string>
+    <string name="freinds">Friends</string>
+    <string name="following">Following</string>
+    <string name="years">years</string>
+    <string name="unfollow_message">Do you really want to unfollow?</string>
+    <string name="empty_friends">"You don\'t have any friends yet.\n\nYou can send bottles to find some!"</string>
+    <string name="empty_wall">Your wall is empty! click to change it</string>
+    <string name="empty_bottle">No bottles in your island\n\nWe will notify you when someone sends you a bottle</string>
+    <string name="translation_error">Translation is not available right now</string>
+    <string name="choose_language">Translate to</string>
+    <string name="bottles">Bottles</string>
+    <string name="feathers">Feathers</string>
+    <string name="owls">Owls</string>
+    <string name="followers">Followers</string>
+    <string name="reputation">Reputation</string>
+    <string name="reputation_desc">Reputation represents your overall progress, it can increase you change of receiving bottles.\nYou can increase your Reputation by sending High quality bottles and Stories.</string>
+    <string name="followers_desc">Followers receive your Stories in a special way.\nYou can increase the number of followers by sending high quality Stories and Bottles.</string>
+    <string name="or">OR</string>
+    <string name="deleted_friend">" has deleted you! you will not receive any messages from this user"</string>
+
+    <string translatable="false" name="com_facebook_loginview_logged_in_using_facebook_f1gender">Logged in using Facebook</string>
+    <string name="watch_video">or\nyou can earn 5 coins by watching a video</string>
+    <string name="success_buy_gold">You have purchased %1$d coins successfully</string>
+
+    <string name="need_feather">You need an Feather!</string>
+    <string name="buy_feather">buy a Feather</string>
+    <string name="confirm">confirm</string>
+    <string name="tip_throw_bottle">Tip: Swipe up to throw the bottle</string>
+    <string name="privacy_url">https://www.freeprivacypolicy.com/privacy/view/51f24812ffa7bebfebc79b2a507298ed</string>
+
+</resources>

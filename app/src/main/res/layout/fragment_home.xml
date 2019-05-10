@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/picture"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="55dp"
+            app:srcCompat="@drawable/account_large"
+            app:civ_border_color="@color/blue_trans2"
+            app:civ_border_width="15dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/gold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/picture"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_toEndOf="@+id/picture"
+            android:clickable="true"
+            app:backgroundTint="@color/cardview_light_background"
+            app:elevation="1dp"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/gold" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignTop="@+id/picture"
+            android:layout_alignEnd="@+id/picture"
+            android:layout_margin="10dp"
+            app:srcCompat="@drawable/pencil" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/ship"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/picture"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_toStartOf="@+id/picture"
+            android:clickable="true"
+            app:backgroundTint="@color/cardview_light_background"
+            app:elevation="1dp"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ship" />
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/mybottles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        app:backgroundTint="@color/cardview_light_background"
+        app:elevation="5dp"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/bottles"
+        app:useCompatPadding="false" />
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user"
+        android:layout_margin="10dp"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="3dp">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fadeScrollbars="false"
+            android:fadingEdge="horizontal"
+            android:scrollbars="horizontal">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp">
+
+                <RelativeLayout
+                    android:id="@+id/bottles_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/reputation_layout"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/bottles"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/pack" />
+
+                    <TextView
+                        android:id="@+id/bottle_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/bottles"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="10 bottles"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/feather_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toEndOf="@+id/owl_layout"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/feather"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/wings" />
+
+                    <TextView
+                        android:id="@+id/feather_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/feather"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="10 feathers"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/owl_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@+id/bottles_layout"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/owel"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/owl2" />
+
+                    <TextView
+                        android:id="@+id/owl_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/owel"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="10 Owls"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/reputation_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_toEndOf="@+id/followers_layout"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/reputation"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/star" />
+
+                    <TextView
+                        android:id="@+id/reputation_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/reputation"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="5"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/followers_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/followers"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/followers" />
+
+                    <TextView
+                        android:id="@+id/followers_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/followers"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="0"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </HorizontalScrollView>
+
+    </android.support.v7.widget.CardView>
+
+    <Button
+        android:id="@+id/show_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/but_see_profile"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="Show profile"
+        android:textColor="@color/colorCardView" />
+
+
+</RelativeLayout>

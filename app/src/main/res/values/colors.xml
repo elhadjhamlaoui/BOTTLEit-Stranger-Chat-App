@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1E88E5</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#0084ff</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="orange_800">#D84315</color>
+    <color name="orange_900">#bf360c</color>
+
+    <color name="deep_500">#FF5722</color>
+
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_500">#9e9e9e</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="blue_trans">#8b0084ff</color>
+    <color name="colorIndivateTab">@android:color/background_light</color>
+    <color name="amber">#ffd54f</color>
+    <color name="colorCardView">@android:color/background_light</color>
+    <color name="profile_view">#01579b</color>
+    <color name="blue_trans2">#690084ff</color>
+
+
+</resources>

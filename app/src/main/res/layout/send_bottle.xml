@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/bg2"
+    tools:context="com.app_republic.bottle.ui.sendBottle">
+
+    <RelativeLayout
+        android:id="@+id/tip_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/empty">
+
+        <TextView
+            android:id="@+id/tip_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/tip_throw_bottle"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/tip_text"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            app:srcCompat="@drawable/swipe_up" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/view"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-10dp"
+        app:srcCompat="@drawable/bottle"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="361dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/filter_layout"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        app:backgroundTint="@color/cardview_light_background"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/filter" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/filter_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="2dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <HorizontalScrollView
+                android:id="@+id/scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:id="@+id/country_selector"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:id="@+id/country"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/but_cn"
+                            android:padding="10dp"
+                            android:text="@string/country"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:id="@+id/del_country"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentTop="true"
+                            android:visibility="invisible"
+                            app:srcCompat="@drawable/delete" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/gender_selector"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:id="@+id/gender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:background="@drawable/but_cn"
+                            android:padding="10dp"
+                            android:text="@string/gender"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:id="@+id/del_gender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentTop="true"
+                            android:visibility="invisible"
+                            app:srcCompat="@drawable/delete" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/scroll"
+                android:layout_margin="10dp"
+                android:background="@drawable/but_cn"
+                android:paddingBottom="10dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp">
+
+                <com.appyvet.materialrangebar.RangeBar xmlns:app="http://schemas.android.com/apk/res-auto"
+
+                    android:id="@+id/rangeBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_toEndOf="@+id/textView4"
+                    app:mrb_connectingLineColor="@color/colorPrimary"
+                    app:mrb_pinColor="@color/colorPrimary"
+                    app:mrb_pinTextColor="@color/cardview_light_background"
+                    app:mrb_rangeBarPaddingBottom="12dp"
+                    app:mrb_selectorBoundaryColor="#9603a9f4"
+                    app:mrb_selectorBoundarySize="2dp"
+                    app:mrb_selectorColor="#9603a9f4"
+                    app:mrb_selectorSize="10dp"
+                    app:mrb_temporaryPins="true"
+                    app:mrb_tickColor="@color/cardview_light_background"
+                    app:mrb_tickEnd="80"
+                    app:mrb_tickHeight="0dp"
+                    app:mrb_tickInterval="1"
+                    app:mrb_tickStart="13" />
+
+
+                <TextView
+                    android:id="@+id/age1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rangeBar"
+                    android:layout_centerHorizontal="true"
+                    android:text="12" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/rangeBar"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/age"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/age2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rangeBar"
+                    android:layout_centerHorizontal="false"
+                    android:layout_toEndOf="@+id/age1_text"
+                    android:text=" - 90" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+    <RelativeLayout
+        android:id="@+id/uploadImgae"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+
+            android:text="@string/uploadingimage"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp" />
+
+        <ProgressBar
+            android:id="@+id/imageProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="10dp"
+            android:paddingTop="-10dp" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/uploadVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/uploadingvideo"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp" />
+
+        <ProgressBar
+            android:id="@+id/videoProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="10dp"
+            android:paddingTop="-10dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/animationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:visibility="invisible">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerInParent="true"
+            app:lottie_autoPlay="false"
+            app:lottie_rawRes="@raw/success" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
