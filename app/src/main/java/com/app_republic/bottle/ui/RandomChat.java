@@ -14,6 +14,7 @@ import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.util.AppSingleton;
 import com.app_republic.bottle.util.Static;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +29,7 @@ public class RandomChat extends AppCompatActivity {
     ImageView IV_icon;
     AppSingleton appSingleton;
     DatabaseReference databaseReference;
+    ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +47,27 @@ public class RandomChat extends AppCompatActivity {
         databaseReference = appSingleton.getDatabaseReference();
 
 
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    //todo: start chat activity
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         BT_start.setOnClickListener(v -> {
             BT_start.setEnabled(false);
-
+            databaseReference
+                    .child("random")
+                    .child(StaticConfig.UID)
+                    .child("partner")
+                    .addValueEventListener(valueEventListener);
             databaseReference
                     .child("random")
                     .orderByChild("available")
@@ -58,7 +78,17 @@ public class RandomChat extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.hasChildren()) {
                                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                    data.child("available").getRef().setValue(false);
+                                    data.child("available").getRef().setValue(false)
+                                            .addOnSuccessListener(aVoid -> {
+                                                data.child("partner").getRef()
+                                                        .setValue(StaticConfig.UID)
+                                                        .addOnSuccessListener(aVoid1 -> {
+                                                            //todo: start chat activity
+                                                        })
+                                                        .addOnFailureListener(e -> notFoud());
+
+                                            })
+                                            .addOnFailureListener(e -> notFoud());
 
                                 }
                             } else {
@@ -74,8 +104,11 @@ public class RandomChat extends AppCompatActivity {
                                                         .child(StaticConfig.UID)
                                                         .child("available")
                                                         .setValue(false);
+                                                notFoud();
+
                                             }, 30000);
-                                        });
+                                        })
+                                        .addOnFailureListener(e -> notFoud());
 
                             }
 
@@ -83,7 +116,7 @@ public class RandomChat extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            notFoud();
                         }
                     });
 
@@ -101,6 +134,13 @@ public class RandomChat extends AppCompatActivity {
         });
 
     }
+
+
+    private void notFoud() {
+
+    }
+
+
 
 
     @Override
