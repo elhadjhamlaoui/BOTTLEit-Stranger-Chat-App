@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.wrld:wrld-android-sdk:0.0.1071@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/57315d706f3f056390d51b905d9cea6d/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/57315d706f3f056390d51b905d9cea6d/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wrld/wrld-android-sdk/0.0.1071/85a75860182f3ae333720d072855322c13558868/wrld-android-sdk-0.0.1071-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

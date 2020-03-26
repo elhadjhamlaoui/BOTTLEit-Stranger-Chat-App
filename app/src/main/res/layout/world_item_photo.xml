@@ -34,8 +34,9 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
                 android:scaleType="centerCrop" />
 
             <android.support.text.emoji.widget.EmojiTextView

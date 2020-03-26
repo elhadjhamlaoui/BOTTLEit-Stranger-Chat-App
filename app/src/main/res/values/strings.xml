@@ -1,8 +1,8 @@
 <resources>
 
     <string name="console_license_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArUds+XmtT2HXM4EA0i5iMUZCBkTbduWTkyc7P4lwggTqbbkF2S914wBCkXXyXQZx9jmIc0YOmEVMZiW0BrzK+xVhgVd4FBgLfPgwsxxVygRFSUFkY4Ouo6jktVBaae0rKzxKeY5+2eP1XiiBxB5PjJasGSttEAng7Vrck6Gn9nz4LTxLqrq6XKGHWBAsfYGYi8FbpO+QM0afM1zxEj4aAjKdxBNSrreMHdFTc8gF7TMFLZ4ae6vIE5IC2QGmMffZ1oiWMHTdTsilIrm7XylNYi3Z5VccgawNI0+Jptgl7gIgGbqovOKM4VaBDf1kdp0tuhzgyw8hG4fD1ij6+3AXGwIDAQAB</string>
-    <string name="facebook_app_id">2254324831256453</string>
-    <string name="fb_login_protocol_scheme">fb2254324831256453</string>
+    <string name="facebook_app_id">215341456223091</string>
+    <string name="fb_login_protocol_scheme">fb215341456223091</string>
 
     <string name="yandex_key">trnsl.1.1.20190401T212606Z.6ff8c8a484f44924.6450ad21d49c4ea1518526fdb8bad9a5199b4748</string>
 
@@ -18,6 +18,7 @@
     <string name="tooshort">write at least 20 characters</string>
     <string name="keep">open</string>
     <string name="release">throw</string>
+    <string name="chat">Chat</string>
 
     <string name="removeFile">Remove File ?</string>
     <string name="yes">Yes</string>
@@ -70,6 +71,10 @@
     <string name="buy_bottle">buy a bottle</string>
     <string name="need_owl">You need an owl to send a new Story!</string>
     <string name="buy_owl">buy an owl</string>
+
+    <string name="buy_compass">buy a Compass</string>
+    <string name="need_compass">You need a Compass!</string>
+
     <string name="sent">sent </string>
     <string name="ago"> ago</string>
     <string name="still_floating">the ocean</string>
@@ -92,11 +97,15 @@
     <string name="reputation">Reputation</string>
     <string name="reputation_desc">Reputation represents your overall progress, it can increase you change of receiving bottles.\nYou can increase your Reputation by sending High quality bottles and Stories.</string>
     <string name="followers_desc">Followers receive your Stories in a special way.\nYou can increase the number of followers by sending high quality Stories and Bottles.</string>
+
+    <string name="compass">Compass</string>
+    <string name="compass_desc">With a Compass you can send your bottle based on country, gender and age!.</string>
+
     <string name="or">OR</string>
     <string name="deleted_friend">" has deleted you! you will not receive any messages from this user"</string>
 
-    <string translatable="false" name="com_facebook_loginview_logged_in_using_facebook_f1gender">Logged in using Facebook</string>
-    <string name="watch_video">or\nyou can earn 5 coins by watching a video</string>
+    <string name="com_facebook_loginview_logged_in_using_facebook_f1gender" translatable="false">Logged in using Facebook</string>
+    <string name="watch_video">or\nyou can earn 3 coins by watching a video</string>
     <string name="success_buy_gold">You have purchased %1$d coins successfully</string>
 
     <string name="need_feather">You need an Feather!</string>
@@ -104,5 +113,8 @@
     <string name="confirm">confirm</string>
     <string name="tip_throw_bottle">Tip: Swipe up to throw the bottle</string>
     <string name="privacy_url">https://www.freeprivacypolicy.com/privacy/view/51f24812ffa7bebfebc79b2a507298ed</string>
+    <string name="need_compass_3">you need 3 compasses!</string>
+    <string name="comments">Comments</string>
+    <string name="add_comment">Aa</string>
 
 </resources>

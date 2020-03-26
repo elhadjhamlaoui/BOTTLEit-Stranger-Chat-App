@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +44,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by elhadj on 17/09/2018.
@@ -270,10 +274,42 @@ public class profile_view extends DialogFragment {
                         bottle.setEnabled(true);
                         long bottles = Long.parseLong(dataSnapshot.getValue().toString());
                         if (bottles > 0) {
-                            Intent intent = new Intent(getActivity(), newBottle.class);
-                            intent.putExtra("class","profile");
-                            intent.putExtra("uid",getArguments().getString("uid"));
-                            startActivity(intent);
+                            FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID)
+                                    .child("compass").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.getValue() != null) {
+                                        long compass = Long.parseLong(dataSnapshot.getValue().toString());
+                                        if (compass >= 3) {
+                                            Intent intent = new Intent(getActivity(), newBottle.class);
+                                            intent.putExtra("class","profile");
+                                            intent.putExtra("uid",getArguments().getString("uid"));
+                                            startActivityForResult(intent, StaticConfig.REQUEST_CODE_BOTTLE);
+                                        } else {
+                                            android.app.AlertDialog.Builder builder =
+                                                    new android.app.AlertDialog.Builder(getActivity());
+                                            builder.setMessage(getString(R.string.need_compass_3));
+                                            builder.setPositiveButton(getString(R.string.buy_compass),
+                                                    new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    startActivity(new Intent(getActivity(),
+                                                            ShipActivity.class));
+                                                }
+                                            });
+                                            builder.show();
+                                        }
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setMessage(getString(R.string.need_bottle));
@@ -295,25 +331,39 @@ public class profile_view extends DialogFragment {
             }
         });
 
-        bottle.hide();
-        if (!getArguments().getString("uid").equals(StaticConfig.UID))
-        FirebaseDatabase.getInstance().getReference("user").child(StaticConfig.UID)
-                .child("receivers").child(getArguments().getString("uid"))
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (!dataSnapshot.exists()) {
-                            bottle.show();
-                        }
-                    }
+        checkUser();
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
 
         return rootView;
+    }
+
+
+    void checkUser() {
+        bottle.hide();
+        if (!getArguments().getString("uid").equals(StaticConfig.UID))
+            FirebaseDatabase.getInstance().getReference("user").child(StaticConfig.UID)
+                    .child("receivers").child(getArguments().getString("uid"))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.exists()) {
+                                bottle.show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == StaticConfig.REQUEST_CODE_BOTTLE && resultCode == RESULT_OK) {
+            checkUser();
+        }
     }
 
     class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

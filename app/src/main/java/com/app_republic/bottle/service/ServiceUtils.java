@@ -204,7 +204,10 @@ public class ServiceUtils {
         picker.getCountryByISO("TZ").setName("Tanzania");
         picker.getCountryByISO("LY").setName("Libya");
 
+        if (picker.getCountryByISO(code) != null)
         return picker.getCountryByISO(code).getFlag();
+
+        return -1;
     }
 
     public static int getAge(String birthdate) {

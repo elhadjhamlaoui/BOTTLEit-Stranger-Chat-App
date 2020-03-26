@@ -114,6 +114,7 @@ public class filterCountry extends Fragment {
 
         @Override
         public void onBindViewHolder(final viewHolder holder, int position) {
+            try {
                 final String name = countries.get(position);
                 holder.country.setText(picker.getCountryByISO(name).getName());
                 holder.avatar.setImageResource(picker.getCountryByISO(name).getFlag());
@@ -132,6 +133,10 @@ public class filterCountry extends Fragment {
 
                     }
                 });
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
         }
 
 

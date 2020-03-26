@@ -16,7 +16,7 @@
         android:layout_marginStart="5dp"
         app:srcCompat="@drawable/default_avata"/>
 
-    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+    <android.support.text.emoji.widget.EmojiTextView
         android:id="@+id/textContentFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,6 +31,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000"
         android:textSize="14sp"
-        emojicon:emojiconSize="18sp" />
+        />
 
 </RelativeLayout>

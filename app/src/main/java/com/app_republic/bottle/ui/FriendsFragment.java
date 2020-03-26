@@ -1,10 +1,12 @@
 package com.app_republic.bottle.ui;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -19,9 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app_republic.bottle.MainActivity;
 import com.app_republic.bottle.R;
@@ -66,8 +70,9 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public FragFriendClickFloatButton onClickFloatButton;
     private ListFriend dataListFriend = null;
     private ArrayList<String> listFriendID = null;
-    private LovelyProgressDialog dialogFindAllFriend;
+    private ProgressDialog dialogFindAllFriend;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Button BT_rooms, BT_random;
     private CountDownTimer detectFriendOnline;
     public static int ACTION_START_CHAT = 1;
     private RelativeLayout empty_layout;
@@ -133,18 +138,22 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mSwipeRefreshLayout = layout.findViewById(R.id.swipeRefreshLayout);
         title = layout.findViewById(R.id.title);
 
+        BT_random = layout.findViewById(R.id.random);
+        BT_rooms = layout.findViewById(R.id.chat_rooms);
+
         empty_layout = layout.findViewById(R.id.empty_layout);
         friends_layout = layout.findViewById(R.id.friends_layout);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         adapter = new ListFriendsAdapter(getContext(), dataListFriend, this);
         recyclerListFrends.setAdapter(adapter);
-        dialogFindAllFriend = new LovelyProgressDialog(getContext());
+        dialogFindAllFriend = new ProgressDialog(getActivity());
 
         listFriendID = new ArrayList<>();
-        dialogFindAllFriend.setCancelable(false)
-                .setTitle("Updating friend list...")
-                .show();
+        dialogFindAllFriend.setCancelable(true);
+        dialogFindAllFriend.setMessage("Updating friend list...");
+        dialogFindAllFriend.setTitle(null);
+        dialogFindAllFriend.show();
         getListFriendUId();
 
 
@@ -171,6 +180,14 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         IntentFilter intentFilter = new IntentFilter(ACTION_DELETE_FRIEND);
         getContext().registerReceiver(deleteFriendReceiver, intentFilter);
 
+
+        BT_rooms.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), CountriesActivity.class));
+        });
+        BT_random.setOnClickListener(v -> {
+            //Toast.makeText(getActivity(), "Comming soon", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getActivity(), RandomChat.class));
+        });
         return layout;
     }
 
@@ -208,7 +225,8 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         dialogWait.setCancelable(false)
                 .setTitle("Finding friend....")
                 .show();
-        FirebaseDatabase.getInstance().getReference().child("user").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("user").child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 dialogWait.dismiss();
@@ -284,11 +302,20 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                         .setTitle("Success")
                                         .setMessage("Add friend success")
                                         .show();
-                                listFriendID.add(idFriend);
-                                dataListFriend.getListFriend().add(userInfo);
+
+                                if (!listFriendID.contains(idFriend)) {
+                                    listFriendID.add(idFriend);
+                                    dataListFriend.getListFriend().add(userInfo);
 
 
-                                FriendDB.getInstance(getContext()).addFriend(userInfo);
+                                    try {
+                                        FriendDB.getInstance(getContext()).addFriend(userInfo);
+
+                                    } catch (SQLiteConstraintException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
                                 adapter.notifyDataSetChanged();
                             } else {
                                 dialogWait.dismiss();
@@ -372,131 +399,139 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
      */
 
     private void getAllFriendInfo(final int index) {
-        if (index == listFriendID.size()) {
+        if (index >= listFriendID.size()) {
             //save list friend
             adapter.notifyDataSetChanged();
             dialogFindAllFriend.dismiss();
             mSwipeRefreshLayout.setRefreshing(false);
             detectFriendOnline.start();
-
-
         } else {
-            final String id = listFriendID.get(index);
-            FirebaseDatabase.getInstance().getReference().child("user/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        final Friend user = new Friend();
-                        HashMap mapUserInfo = (HashMap) dataSnapshot.getValue();
-                        user.name = (String) mapUserInfo.get("name");
-                        user.email = (String) mapUserInfo.get("email");
-                        user.avatar = (String) mapUserInfo.get("avatar");
-                        user.id = id;
-                        user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
-                        dataListFriend.getListFriend().add(user);
-                        FriendDB.getInstance(getContext()).addFriend(user);
+                final String id = listFriendID.get(index);
+                FirebaseDatabase.getInstance().getReference().child("user/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() != null) {
+                            final Friend user = new Friend();
+                            HashMap mapUserInfo = (HashMap) dataSnapshot.getValue();
+                            user.name = (String) mapUserInfo.get("name");
+                            user.email = (String) mapUserInfo.get("email");
+                            user.avatar = (String) mapUserInfo.get("avatar");
+                            user.id = id;
+                            user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
+
+                            if (!dataListFriend.getListFriend().contains(user)) {
+                                dataListFriend.getListFriend().add(user);
+                                try {
+                                    FriendDB.getInstance(getContext()).addFriend(user);
 
 
-                        if (mapQueryOnline.get(id) == null && mapChildListenerOnline.get(id) == null) {
-                            mapQueryOnline.put(id, FirebaseDatabase.getInstance().getReference().child("user/" + id + "/status"));
-                            mapChildListenerOnline.put(id, new ChildEventListener() {
-                                @Override
-                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                    if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
-                                        user.status.isOnline = (boolean) dataSnapshot.getValue();
-                                        adapter.notifyDataSetChanged();
+                                    if (mapQueryOnline.get(id) == null && mapChildListenerOnline.get(id) == null) {
+                                        mapQueryOnline.put(id, FirebaseDatabase.getInstance().getReference().child("user/" + id + "/status"));
+                                        mapChildListenerOnline.put(id, new ChildEventListener() {
+                                            @Override
+                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                                if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
+                                                    user.status.isOnline = (boolean) dataSnapshot.getValue();
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                                if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
+                                                    user.status.isOnline = (boolean) dataSnapshot.getValue();
+                                                    adapter.notifyDataSetChanged();
+
+
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                        mapQueryOnline.get(id).addChildEventListener(mapChildListenerOnline.get(id));
                                     }
-                                }
-
-                                @Override
-                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                                    if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
-                                        user.status.isOnline = (boolean) dataSnapshot.getValue();
-                                        adapter.notifyDataSetChanged();
 
 
-                                    }
-                                }
+                                    if (mapQuery.get(id) == null && mapChildListener.get(id) == null) {
+                                        mapQuery.put(id, FirebaseDatabase.getInstance().getReference().child("message/" + user.idRoom).limitToLast(1));
+                                        mapChildListener.put(id, new ChildEventListener() {
+                                            @Override
+                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                                HashMap mapMessage = (HashMap) dataSnapshot.getValue();
 
-                                @Override
-                                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                                                user.message.timestamp = (long) mapMessage.get("timestamp");
 
-                                }
-
-                                @Override
-                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                            mapQueryOnline.get(id).addChildEventListener(mapChildListenerOnline.get(id));
-                        }
+                                                if (mapMark.get(id) != null) {
+                                                    if (!mapMark.get(id)) {
+                                                        user.message.text = id + mapMessage.get("text");
+                                                    } else {
+                                                        user.message.text = (String) mapMessage.get("text");
+                                                    }
+                                                    adapter.notifyDataSetChanged();
+                                                    mapMark.put(id, false);
+                                                } else {
+                                                    user.message.text = (String) mapMessage.get("text");
+                                                    adapter.notifyDataSetChanged();
+                                                }
 
 
-                        if (mapQuery.get(id) == null && mapChildListener.get(id) == null) {
-                            mapQuery.put(id, FirebaseDatabase.getInstance().getReference().child("message/" + user.idRoom).limitToLast(1));
-                            mapChildListener.put(id, new ChildEventListener() {
-                                @Override
-                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                    HashMap mapMessage = (HashMap) dataSnapshot.getValue();
+                                            }
 
-                                    user.message.timestamp = (long) mapMessage.get("timestamp");
+                                            @Override
+                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                                    if (mapMark.get(id) != null) {
-                                        if (!mapMark.get(id)) {
-                                            user.message.text = id + mapMessage.get("text");
-                                        } else {
-                                            user.message.text = (String) mapMessage.get("text");
-                                        }
-                                        adapter.notifyDataSetChanged();
-                                        mapMark.put(id, false);
+                                            }
+
+                                            @Override
+                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                        mapQuery.get(id).addChildEventListener(mapChildListener.get(id));
+                                        mapMark.put(id, true);
                                     } else {
-                                        user.message.text = (String) mapMessage.get("text");
-                                        adapter.notifyDataSetChanged();
+                                        mapMark.put(id, true);
                                     }
-
-
+                                } catch (SQLiteConstraintException e) {
+                                    e.printStackTrace();
                                 }
+                            }
 
-                                @Override
-                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                                }
 
-                                @Override
-                                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                                }
-
-                                @Override
-                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                            mapQuery.get(id).addChildEventListener(mapChildListener.get(id));
-                            mapMark.put(id, true);
-                        } else {
-                            mapMark.put(id, true);
                         }
+                        getAllFriendInfo(index + 1);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
-                    getAllFriendInfo(index + 1);
-                }
+                });
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
         }
     }
 

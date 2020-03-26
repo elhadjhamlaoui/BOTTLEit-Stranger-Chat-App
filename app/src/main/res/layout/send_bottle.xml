@@ -237,6 +237,7 @@
             android:layout_alignParentTop="false"
             android:layout_marginTop="10dp"
             android:paddingTop="-10dp" />
+
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/uploadVideo"
@@ -271,6 +272,34 @@
         android:layout_height="match_parent"
         android:background="@color/cardview_light_background"
         android:visibility="invisible">
+
+        <Button
+            android:id="@+id/my_bottles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/but_see_profile"
+            android:text="my bottles"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/receiver_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/my_bottles"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:text=""
+            android:textSize="18sp" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_view"

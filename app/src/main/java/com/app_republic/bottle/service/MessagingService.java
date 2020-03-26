@@ -12,12 +12,14 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
+import com.app_republic.bottle.BuildConfig;
 import com.app_republic.bottle.MainActivity;
 import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.SharedPreferenceHelper;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
 import java.util.Random;
 
 public class MessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
@@ -64,7 +66,30 @@ public class MessagingService extends com.google.firebase.messaging.FirebaseMess
         }
         int notificationId = new Random().nextInt(60000);
 
+
+        Map<String, String> data = remoteMessage.getData();
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        if (data.get("type") != null) {
+
+            if (data.get("type").equals("version")) {
+                notificationIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id="
+                                + BuildConfig.APPLICATION_ID));
+            } else if (data.get("type").equals("ad_app")) {
+                notificationIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id="
+                                + data.get("app_id")));
+            } else if (data.get("type").equals("ad_url")) {
+                notificationIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(data.get("url")));
+            } else {
+                notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+            }
+
+            body = data.get("body");
+        }
+
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);

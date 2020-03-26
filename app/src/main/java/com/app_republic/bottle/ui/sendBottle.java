@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -36,21 +38,38 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.app_republic.bottle.R;
+import com.app_republic.bottle.data.FriendDB;
 import com.app_republic.bottle.data.SharedPreferenceHelper;
+import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.Bottle;
+import com.app_republic.bottle.model.Friend;
+import com.app_republic.bottle.model.Receiver;
 import com.app_republic.bottle.model.body;
+import com.app_republic.bottle.service.ServiceUtils;
 import com.appyvet.materialrangebar.RangeBar;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.mukesh.countrypicker.Country;
 import com.mukesh.countrypicker.CountryPicker;
 import com.mukesh.countrypicker.OnCountryPickerListener;
+import com.yarolegovich.lovelydialog.LovelyInfoDialog;
+import com.yarolegovich.lovelydialog.LovelyProgressDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +94,9 @@ public class sendBottle extends AppCompatActivity {
     Map<String, String> map;
     AnimatorSet animationSet1;
     RelativeLayout tip_layout;
-
+    Button BT_bottles;
+    boolean compass_check = false;
+    TextView TV_receiver_text;
 
     boolean bool = true;
 
@@ -88,6 +109,7 @@ public class sendBottle extends AppCompatActivity {
 
         //Bottle bottle = new Bottle(getIntent().getStringExtra("text"));
         animationLayout = findViewById(R.id.animationLayout);
+        BT_bottles = findViewById(R.id.my_bottles);
         imageLayout = findViewById(R.id.uploadImgae);
         videoLayout = findViewById(R.id.uploadVideo);
         videoBar = findViewById(R.id.videoProgress);
@@ -99,7 +121,7 @@ public class sendBottle extends AppCompatActivity {
         age1_text = findViewById(R.id.age1_text);
         age2_text = findViewById(R.id.age2_text);
         tip_layout = findViewById(R.id.tip_layout);
-
+        TV_receiver_text = findViewById(R.id.receiver_text);
         del_country = findViewById(R.id.del_country);
         del_gender = findViewById(R.id.del_gender);
 
@@ -125,7 +147,7 @@ public class sendBottle extends AppCompatActivity {
         map = new HashMap<>();
 
         if (getIntent().getStringExtra("class").equals("profile")) {
-            map.put("uid",getIntent().getStringExtra("uid"));
+            map.put("uid", getIntent().getStringExtra("uid"));
             filter.hide();
         }
 
@@ -143,26 +165,87 @@ public class sendBottle extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (filterLayout.getVisibility() == View.GONE) {
-                    ViewCompat.animate(filter).
-                            rotation(360f).
-                            withLayer().
-                            setDuration(500).
-                            setInterpolator(interpolator).
-                            start();
-                    filterLayout.setVisibility(View.VISIBLE);
 
-                } else {
-                    ViewCompat.animate(filter).
-                            rotation(0f).
-                            withLayer().
-                            setDuration(500).
-                            setInterpolator(interpolator).
-                            start();
-                    filterLayout.setVisibility(View.GONE);
+                if (!compass_check)
+                    FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID)
+                            .child("compass").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() != null) {
+                                long compass = Long.parseLong(dataSnapshot.getValue().toString());
+                                if (compass > 0) {
+                                    compass_check = true;
 
+                                    if (filterLayout.getVisibility() == View.GONE) {
+                                        ViewCompat.animate(filter).
+                                                rotation(360f).
+                                                withLayer().
+                                                setDuration(500).
+                                                setInterpolator(interpolator).
+                                                start();
+                                        filterLayout.setVisibility(View.VISIBLE);
+
+                                    } else {
+                                        ViewCompat.animate(filter).
+                                                rotation(0f).
+                                                withLayer().
+                                                setDuration(500).
+                                                setInterpolator(interpolator).
+                                                start();
+                                        filterLayout.setVisibility(View.GONE);
+
+                                    }
+                                } else {
+                                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(sendBottle.this);
+                                    builder.setMessage(getString(R.string.need_compass));
+                                    builder.setPositiveButton(getString(R.string.buy_compass), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            startActivity(new Intent(sendBottle.this, ShipActivity.class));
+                                        }
+                                    });
+                                    builder.show();
+                                }
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                else {
+                    if (filterLayout.getVisibility() == View.GONE) {
+                        ViewCompat.animate(filter).
+                                rotation(360f).
+                                withLayer().
+                                setDuration(500).
+                                setInterpolator(interpolator).
+                                start();
+                        filterLayout.setVisibility(View.VISIBLE);
+
+                    } else {
+                        ViewCompat.animate(filter).
+                                rotation(0f).
+                                withLayer().
+                                setDuration(500).
+                                setInterpolator(interpolator).
+                                start();
+                        filterLayout.setVisibility(View.GONE);
+
+                    }
                 }
 
+
+            }
+        });
+        BT_bottles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(sendBottle.this, mybottles.class));
+                setResult(RESULT_OK, new Intent());
+                finish();
             }
         });
 
@@ -286,7 +369,6 @@ public class sendBottle extends AppCompatActivity {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 animationSet.cancel();
-
                 animationSet.start();
             }
         });
@@ -454,7 +536,7 @@ public class sendBottle extends AppCompatActivity {
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
 
-                                                            start_animation();
+                                                            findTarget(key);
 
 
                                                         } else {
@@ -478,7 +560,8 @@ public class sendBottle extends AppCompatActivity {
 
                                         if (task.isSuccessful()) {
 
-                                            start_animation();
+                                            findTarget(key);
+
 
                                         } else {
 
@@ -514,7 +597,8 @@ public class sendBottle extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
 
-                                        start_animation();
+                                        findTarget(key);
+
 
                                     } else {
                                         Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -534,7 +618,7 @@ public class sendBottle extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        start_animation();
+                        findTarget(key);
 
 
                     } else {
@@ -556,12 +640,96 @@ public class sendBottle extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                setResult(RESULT_OK, new Intent());
-                finish();
+                if (getIntent().getStringExtra("class").equals("profile")) {
+                    setResult(RESULT_OK, new Intent());
+                    finish();
+                }
+
             }
         });
     }
 
+    private void findTarget(String id) {
+        final String uid = StaticConfig.UID;
+        Map<String, String> data = new HashMap<>();
+        data.put("uid", uid);
+        data.put("id", id);
+        final ProgressDialog progressDialog = new ProgressDialog(this);
 
+        progressDialog.setMessage("Sending the Bottle..");
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle(null);
+        progressDialog.show();
+
+        FirebaseFunctions
+                .getInstance()
+                .getHttpsCallable("bottle")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        if (task.isSuccessful()) {
+                            start_animation();
+                            progressDialog.dismiss();
+
+                            JSONObject object = new JSONObject(task.getResult().getData().toString());
+                            Gson gson = new Gson();
+                            if (!object.isNull("receiver")) {
+                                Receiver receiver = gson.fromJson(object
+                                        .getJSONObject("receiver").toString(), Receiver.class);
+                                String country = ServiceUtils
+                                        .getCountryName(sendBottle.this,
+                                                receiver.getCountry());
+                                TV_receiver_text.setText(receiver.getName()
+                                        + " from " + country + " found your bottle!");
+
+                            } else {
+                                TV_receiver_text.setText("Unfortunately no one found your bottle, please try again later");
+                            }
+
+
+                        } else {
+                            progressDialog.dismiss();
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(sendBottle.this);
+
+                            alertDialog.setTitle("Error");
+                            alertDialog.setMessage("An Error occurred, please try again later");
+                            alertDialog.setCancelable(false);
+                            alertDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    setResult(RESULT_OK, new Intent());
+                                    finish();
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                        return null;
+
+                    }
+                });
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(sendBottle.this);
+
+        alertDialog.setTitle(null);
+        alertDialog.setMessage("You want to exit?");
+        alertDialog.setCancelable(true);
+        alertDialog.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setResult(RESULT_OK, new Intent());
+                finish();
+            }
+        });
+        alertDialog.show();
+    }
 }
 

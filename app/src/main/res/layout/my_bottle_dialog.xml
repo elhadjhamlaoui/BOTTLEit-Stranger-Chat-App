@@ -17,6 +17,7 @@
             android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
             android:text="Bottle's journey"
@@ -27,8 +28,8 @@
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView13"
-            android:layout_marginTop="40dp"
+            android:layout_below="@+id/floating_text"
+            android:layout_marginTop="6dp"
             android:scrollbars="vertical" />
 
         <Button
@@ -44,5 +45,20 @@
             android:paddingEnd="10dp"
             android:text="Show bottle"
             android:textColor="@color/colorCardView" />
+
+        <TextView
+            android:id="@+id/floating_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView13"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="0dp"
+            android:gravity="center"
+            android:text="your bottle stills in the ocean looking for someone!"
+            android:textSize="18sp"
+            android:visibility="gone" />
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

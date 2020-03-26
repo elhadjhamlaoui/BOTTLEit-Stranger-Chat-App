@@ -4,13 +4,16 @@ public class Item {
     private String name,desc,key;
     private int icon;
     private int price;
+    private int count;
 
-    public Item(String key, String name, String desc ,int icon, int price) {
+    public Item(String key, String name, String desc ,int icon, int price, int count) {
         this.name = name;
         this.desc = desc;
         this.icon = icon;
         this.price = price;
         this.key = key;
+        this.count = count;
+
     }
 
     public String getName() {
@@ -51,5 +54,13 @@ public class Item {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

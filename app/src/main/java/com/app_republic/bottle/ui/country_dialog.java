@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,10 +104,39 @@ public class country_dialog extends DialogFragment {
     }
 
     public void findCountry() {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://ip-api.com/json";
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle(null);
+
+        String countryCodeValue;
+
+        if (getActivity().getSystemService(Context.TELEPHONY_SERVICE) != null) {
+            TelephonyManager tm = (TelephonyManager)getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+            countryCodeValue = tm.getNetworkCountryIso();
+        } else {
+            countryCodeValue = getResources().getConfiguration().locale.getCountry();
+        }
+        user.country = countryCodeValue;
+        FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID).child("country").setValue(user.country).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    progressBar.setVisibility(View.GONE);
+                    alertDialogBuilder.setMessage(getString(R.string.success));
+                    alertDialogBuilder.create().show();
+                    SharedPreferenceHelper.getInstance(getActivity()).saveUserInfo(user);
+                    info.update();
+                    country.setText(ServiceUtils.getCountryName(getActivity(),user.country));
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    alertDialogBuilder.setMessage(getString(R.string.error));
+                    alertDialogBuilder.create().show();
+                }
+            }
+        });
+
+
+        /*RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "http://ip-api.com/json";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -149,5 +179,7 @@ public class country_dialog extends DialogFragment {
         });
 
         queue.add(stringRequest);
+
+        */
     }
 }

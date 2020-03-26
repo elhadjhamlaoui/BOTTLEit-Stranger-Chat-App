@@ -8,20 +8,20 @@ public class User {
     public String interests = "",languages = "";
     public String wall = "";
     public String birthdate = "";
-    public String country;
+    public String country = "GB";
     public String gender = "";
     public String name;
     public String email;
     public String token;
     public long followings;
     public long followers;
-
     public String avatar = StaticConfig.STR_DEFAULT;
     public Status status;
     public Message message;
-    public int owls = 10;
-    public int bottles = 10;
-    public int feathers = 10;
+    public int owls = 5;
+    public int compass = 5;
+    public int bottles = 5;
+    public int feathers = 5;
     public int reputation = 5;
     public int gold = 10;
 

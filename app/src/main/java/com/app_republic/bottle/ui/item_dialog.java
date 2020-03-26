@@ -41,7 +41,7 @@ public class item_dialog extends DialogFragment {
     private Button buy;
     private ImageView icon;
     private TextView name, desc, amount;
-    private int price;
+    private int price, count;
     private ProgressBar progressBar;
     private info_interface info;
     private String key;
@@ -93,6 +93,7 @@ public class item_dialog extends DialogFragment {
         amount = rootView.findViewById(R.id.price);
 
 
+        count = getArguments().getInt("count");
         price = getArguments().getInt("price");
         amount.setText(price + " coins");
         name.setText(getArguments().getString("name"));
@@ -122,7 +123,7 @@ public class item_dialog extends DialogFragment {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 int number = Integer.parseInt(dataSnapshot.getValue().toString());
-                                                FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID).child(key).setValue(number + 1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID).child(key).setValue(number + count).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
@@ -184,10 +185,16 @@ public class item_dialog extends DialogFragment {
 
     public void showSuccess() {
         progressBar.setVisibility(View.GONE);
-        alertDialogBuilder.setMessage("You have purchased "+amount.getText().toString()+" successfully");
+        alertDialogBuilder.setMessage("You have purchased " + count + " " + key + " successfully");
         alertDialogBuilder.setTitle(null);
-        alertDialogBuilder.setPositiveButton(R.string.ok,null);
+        alertDialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        });
         alertDialogBuilder.create().show();
+
     }
 
     @Override

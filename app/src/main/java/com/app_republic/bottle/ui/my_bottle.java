@@ -36,6 +36,7 @@ public class my_bottle extends DialogFragment {
     Button show;
     ArrayList<Receiver> receivers = new ArrayList<>();
     Bottle_view bottle;
+    TextView TV_floating;
 
     @Override
     public void onStart() {
@@ -73,6 +74,7 @@ public class my_bottle extends DialogFragment {
 
         recyclerView = rootView.findViewById(R.id.recyclerview);
         show = rootView.findViewById(R.id.show);
+        TV_floating = rootView.findViewById(R.id.floating_text);
 
         CountryPicker.Builder builder = new CountryPicker.Builder().with(getActivity());
         picker = builder.build();
@@ -90,6 +92,8 @@ public class my_bottle extends DialogFragment {
 
         bottle = getArguments().getParcelable("bottle");
         receivers = bottle.receiver;
+        if (receivers.size() == 0)
+            TV_floating.setVisibility(View.VISIBLE);
         user = SharedPreferenceHelper.getInstance(getActivity()).getUserInfo();
         adapter = new Adapter(getActivity(), receivers);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -139,13 +143,18 @@ public class my_bottle extends DialogFragment {
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            Receiver receiver = list.get(position);
-            String country = receiver.getCountry();
+            try {
+                Receiver receiver = list.get(position);
+                String country = receiver.getCountry();
 
-            ((viewHolder) holder).country.setText(picker.getCountryByISO(country).getName());
-            ((viewHolder) holder).date.setText(getDate(System.currentTimeMillis() - receiver.getTimeStamp()) + " ago");
-            ((viewHolder) holder).icon.setImageResource(picker.getCountryByISO(country).getFlag());
-            ((viewHolder) holder).name.setText(receiver.getName());
+                ((viewHolder) holder).country.setText(picker.getCountryByISO(country).getName());
+                ((viewHolder) holder).date.setText(getDate(System.currentTimeMillis() - receiver.getTimeStamp()) + " ago");
+                ((viewHolder) holder).icon.setImageResource(picker.getCountryByISO(country).getFlag());
+                ((viewHolder) holder).name.setText(receiver.getName());
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
 
         }
 

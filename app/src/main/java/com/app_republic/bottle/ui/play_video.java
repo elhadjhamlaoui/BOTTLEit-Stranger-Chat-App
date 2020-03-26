@@ -2,6 +2,7 @@ package com.app_republic.bottle.ui;
 
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -41,6 +42,16 @@ public class play_video extends DialogFragment {
     FloatingActionButton close;
 
     @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        videoView.pause();
+        videoView.suspend();
+        if (task != null)
+            task.cancel(true);
+
+    }
+
+    @Override
     public void onStart() {
 
         super.onStart();
@@ -59,6 +70,7 @@ public class play_video extends DialogFragment {
         return dialog;
 
     }
+
 
     @Nullable
     @Override
@@ -179,6 +191,9 @@ public class play_video extends DialogFragment {
 
     }
 
+
+
+
     private class MyAsync extends AsyncTask<Void, Integer, Void> {
         int duration = videoView.getDuration();
 
@@ -204,10 +219,10 @@ public class play_video extends DialogFragment {
             do {
                 if (isCancelled())
                     break;
-                current = videoView.getCurrentPosition();
+
 
                 try {
-
+                    current = videoView.getCurrentPosition();
                     publishProgress((int) (current * 100 / duration));
                     if (progressBar.getProgress() >= 100) {
                         break;

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -165,7 +167,6 @@
         android:layout_alignEnd="@id/cv"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="-20dp"
-        android:onClick="clickRegisterLayout"
         android:transitionName="loginFab"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"

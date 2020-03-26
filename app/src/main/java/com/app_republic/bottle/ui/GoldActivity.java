@@ -67,7 +67,9 @@ public class GoldActivity extends AppCompatActivity implements RewardedVideoAdLi
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         mRewardedVideoAd.setRewardedVideoAdListener(this);
-        FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID).child("gold").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("user")
+                .child(StaticConfig.UID).child("gold")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -176,6 +178,11 @@ public class GoldActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     }
 
+    @Override
+    public void onBackPressed() {
+        mRewardedVideoAd.destroy(this);
+        finish();
+    }
 
     @Override
     public void onBillingInitialized() {
@@ -202,6 +209,34 @@ public class GoldActivity extends AppCompatActivity implements RewardedVideoAdLi
         final int coins = Integer.parseInt(details.purchaseInfo.purchaseData.productId.split("_")[1]);
 
         FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID)
+                .child("gold")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int number = Integer.parseInt(dataSnapshot.getValue().toString());
+                        gold = number + coins;
+                        FirebaseDatabase.getInstance().getReference().child("user")
+                                .child(StaticConfig.UID).child("gold")
+                                .setValue(gold).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    balance.setText(gold + " coins");
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(GoldActivity.this);
+                                    builder.setPositiveButton(R.string.ok, null);
+                                    builder.setMessage(getString(R.string.success_buy_gold, coins));
+                                    builder.show();
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        /*FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID)
                 .child("gold").runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -211,7 +246,8 @@ public class GoldActivity extends AppCompatActivity implements RewardedVideoAdLi
                     value = Integer.parseInt(mutableData.getValue().toString());
 
                 mutableData.setValue(value + coins);
-                balance.setText(value + coins + " coins");
+                gold = value + coins;
+                balance.setText(gold + " coins");
 
                 return Transaction.success(mutableData);
             }
@@ -224,7 +260,7 @@ public class GoldActivity extends AppCompatActivity implements RewardedVideoAdLi
                 builder.setMessage(getString(R.string.success_buy_gold, coins));
                 builder.show();
             }
-        });
+        });*/
 
         /*
          * Called when requested PRODUCT ID was successfully purchased

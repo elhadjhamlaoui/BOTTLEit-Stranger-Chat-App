@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
@@ -31,9 +32,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.StaticConfig;
+import com.app_republic.bottle.fragment.CommentsFragment;
 import com.app_republic.bottle.model.Adventure;
 import com.app_republic.bottle.model.Language;
 import com.app_republic.bottle.service.ServiceUtils;
+import com.app_republic.bottle.util.Static;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -60,7 +63,7 @@ import java.util.Map;
  */
 
 
-public class receivedAdventure extends DialogFragment {
+public class receivedAdventure extends Fragment {
     Dialog dialog;
     static final int name = 0;
 
@@ -68,7 +71,7 @@ public class receivedAdventure extends DialogFragment {
     TextView nameView, date;
     EmojiTextView textView, titleView;
     ScrollView scrollView;
-    FloatingActionButton close, like;
+    FloatingActionButton close, like, comments;
     RelativeLayout message;
     Adventure adventure;
     FloatingActionButton translate;
@@ -82,7 +85,7 @@ public class receivedAdventure extends DialogFragment {
     String OriginalText;
     Map<String, String> map = new HashMap();
 
-    @Override
+   /* @Override
     public void onStart() {
 
         super.onStart();
@@ -108,7 +111,7 @@ public class receivedAdventure extends DialogFragment {
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return dialog;
 
-    }
+    }*/
 
     @SuppressLint("ClickableViewAccessibility")
     @Nullable
@@ -118,11 +121,12 @@ public class receivedAdventure extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         View view = inflater.inflate(R.layout.received_ad, null);
-        getDialog().getWindow().setBackgroundDrawableResource(R.color.cardview_light_background);
+       // getDialog().getWindow().setBackgroundDrawableResource(R.color.cardview_light_background);
 
         queue = Volley.newRequestQueue(getActivity());
         scrollView = view.findViewById(R.id.scrollView);
         message = view.findViewById(R.id.message);
+        comments = view.findViewById(R.id.comments);
 
         like = view.findViewById(R.id.like);
 
@@ -205,99 +209,107 @@ public class receivedAdventure extends DialogFragment {
         close = view.findViewById(R.id.close);
 
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
+        close.setOnClickListener(view13 -> getActivity().onBackPressed());
+        report.setOnClickListener(view14 -> Toast.makeText(getActivity(), "Comming soon.", Toast.LENGTH_SHORT).show());
+
+
+        image.setOnClickListener(view15 -> {
+            play_image dialog = new play_image();
+            Bundle argumants = new Bundle();
+            argumants.putString("image", imageText);
+            dialog.setArguments(argumants);
+
+            if (!getActivity().isDestroyed() && !getActivity().isFinishing())
+                getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "image").commitAllowingStateLoss();
         });
-        report.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Comming soon.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        video.setOnClickListener(view16 -> {
+            play_video dialog = new play_video();
+            Bundle argumants = new Bundle();
+            argumants.putString("video", videoText);
+            dialog.setArguments(argumants);
+
+            if (!getActivity().isDestroyed() && !getActivity().isFinishing())
+                getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "video").commitAllowingStateLoss();
 
 
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play_image dialog = new play_image();
-                Bundle argumants = new Bundle();
-                argumants.putString("image", imageText);
-                dialog.setArguments(argumants);
-
-                if (!getActivity().isDestroyed() && !getActivity().isFinishing())
-                    getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "image").commitAllowingStateLoss();
-            }
-        });
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play_video dialog = new play_video();
-                Bundle argumants = new Bundle();
-                argumants.putString("video", videoText);
-                dialog.setArguments(argumants);
-
-                if (!getActivity().isDestroyed() && !getActivity().isFinishing())
-                    getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "video").commitAllowingStateLoss();
-
-
-            }
         });
 
-        picture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                profile_view dialog = new profile_view();
+        comments.setOnClickListener(v -> {
+            CommentsFragment fragment = CommentsFragment.newInstance();
+            Bundle args = new Bundle();
 
-                Bundle bundle = new Bundle();
-                bundle.putString("uid", adventure.sender);
-                dialog.setArguments(bundle);
-                dialog.show(getActivity().getSupportFragmentManager(), "profile_view");
-            }
+            args.putString(Static.TARGET_TYPE,
+                    Static.STORY);
+            args.putString(Static.TARGET_ID,
+                    adventure.id);
+
+            args.putString(Static.ROOT_TYPE,
+                    Static.STORY);
+            args.putString(Static.ROOT_ID,
+                    adventure.id);
+
+
+            args.putParcelable(Static.ADVENTURE,
+                    adventure);
+
+            fragment.setArguments(args);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(Static.FRAGMENT_COMMENTS)
+                    .add(R.id.container, fragment)
+                    .commit();
         });
 
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                like.setEnabled(false);
-                FirebaseDatabase.getInstance().getReference().child("adventure").child(adventure.id)
-                        .child("likes").runTransaction(new Transaction.Handler() {
-                    @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        Long value = mutableData.getValue(Long.class);
+        picture.setOnClickListener(view1 -> {
+            profile_view dialog = new profile_view();
 
-                        if (value > 0) {
-                            if (liked)
-                                mutableData.setValue(value - 1);
-                            else
-                                mutableData.setValue(value + 1);
-                        } else {
-                            if (!liked)
-                                mutableData.setValue(value + 1);
+            Bundle bundle = new Bundle();
+            bundle.putString("uid", adventure.sender);
+            dialog.setArguments(bundle);
+            dialog.show(getActivity().getSupportFragmentManager(), "profile_view");
+        });
+
+        like.setOnClickListener(view12 -> {
+            like.setEnabled(false);
+            FirebaseDatabase.getInstance().getReference().child("adventure").child(adventure.id)
+                    .child("likes").runTransaction(new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                    Long value = mutableData.getValue(Long.class);
+
+                    if (value > 0) {
+                        if (liked)
+                            mutableData.setValue(value - 1);
+                        else
+                            mutableData.setValue(value + 1);
+                    } else {
+                        if (!liked)
+                            mutableData.setValue(value + 1);
+                    }
+
+
+
+
+                    return Transaction.success(mutableData);
+                }
+
+
+
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean b,
+                                       DataSnapshot dataSnapshot) {
+
+                    FirebaseDatabase.getInstance().getReference().child("adventure").child(adventure.id)
+                            .child("liked_by").child(StaticConfig.UID).setValue(!liked).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful())
+                            like.setEnabled(true);
                         }
+                    });
 
+                }
+            });
 
-
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(DatabaseError databaseError, boolean b,
-                                           DataSnapshot dataSnapshot) {
-                        FirebaseDatabase.getInstance().getReference().child("adventure").child(adventure.id)
-                                .child("liked_by").child(StaticConfig.UID).setValue(!liked).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                like.setEnabled(true);
-                            }
-                        });
-
-                    }
-                });
-
-            }
         });
 
         like.hide();

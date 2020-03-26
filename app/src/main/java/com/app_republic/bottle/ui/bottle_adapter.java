@@ -70,45 +70,50 @@ public class bottle_adapter extends RecyclerView.Adapter<bottle_adapter.MyViewHo
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final Bottle_view bottle = bottleList.get(position);
-        holder.name.setText(bottle.getName());
+        try {
+            final Bottle_view bottle = bottleList.get(position);
+            holder.name.setText(bottle.getName());
 
-        holder.country.setImageResource(picker.getCountryByISO(bottle.getCountry()).getFlag());
+            holder.country.setImageResource(picker.getCountryByISO(bottle.getCountry()).getFlag());
 
-        final AnimatorSet animationSet = new AnimatorSet();
+            final AnimatorSet animationSet = new AnimatorSet();
 
-        final ObjectAnimator rotation1 = ObjectAnimator.ofFloat(holder.bottle_icon, "rotation", 0f, 10f);
-        rotation1.setDuration(2000);
-        final ObjectAnimator rotation2 = ObjectAnimator.ofFloat(holder.bottle_icon, "rotation", 10f, 0f);
-        rotation2.setDuration(2000);
+            final ObjectAnimator rotation1 = ObjectAnimator.ofFloat(holder.bottle_icon, "rotation", 0f, 10f);
+            rotation1.setDuration(2000);
+            final ObjectAnimator rotation2 = ObjectAnimator.ofFloat(holder.bottle_icon, "rotation", 10f, 0f);
+            rotation2.setDuration(2000);
 
-        animationSet.playSequentially(rotation1, rotation2);
-        animationSet.start();
-        rotation2.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animationSet.cancel();
+            animationSet.playSequentially(rotation1, rotation2);
+            animationSet.start();
+            rotation2.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animationSet.cancel();
 
-                animationSet.start();
-            }
-        });
+                    animationSet.start();
+                }
+            });
 
 
-        holder.root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                receivedBottle dialog = new receivedBottle();
-                Bundle argumants = new Bundle();
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    receivedBottle dialog = new receivedBottle();
+                    Bundle argumants = new Bundle();
 
-                argumants.putParcelable("bottle",bottle);
-                dialog.setArguments(argumants);
+                    argumants.putParcelable("bottle",bottle);
+                    dialog.setArguments(argumants);
 
-                if(!context.isDestroyed() && !context.isFinishing())
-                    context.getSupportFragmentManager().beginTransaction().add(dialog, "received").commitAllowingStateLoss();
+                    if(!context.isDestroyed() && !context.isFinishing())
+                        context.getSupportFragmentManager().beginTransaction().add(dialog, "received").commitAllowingStateLoss();
 
-            }
-        });
+                }
+            });
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
 
 
 

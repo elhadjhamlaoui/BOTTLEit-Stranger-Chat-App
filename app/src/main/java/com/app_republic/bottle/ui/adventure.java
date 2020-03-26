@@ -1,5 +1,6 @@
 package com.app_republic.bottle.ui;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -51,6 +53,8 @@ import java.util.ArrayList;
  */
 
 public class adventure extends AppCompatActivity implements Communicator {
+    private static final int CAMERA_PERMISSION_CODE = 6;
+    private static final int STORAGE_PERMISSION_CODE = 7;
     ArrayList<Typeface> fontList = new ArrayList<>();
     final int ADVENTURE_MIN_BODY=30;
     final int ADVENTURE_MAX_BODY=5000;
@@ -269,16 +273,17 @@ public class adventure extends AppCompatActivity implements Communicator {
             @Override
             public void onClick(final View view) {
                 if (vdoUri==null){
-                    if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-
-                        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,15);
-
-                        takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY,0.5);
-
-                        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-                        }
+                    if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (checkSelfPermission(Manifest.permission.CAMERA)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                        CAMERA_PERMISSION_CODE);
+                            } else {
+                                startCamera();
+                            }
+                        } else
+                            startCamera();
 
                     }
                 }else{
@@ -301,11 +306,16 @@ public class adventure extends AppCompatActivity implements Communicator {
             public void onClick(View view) {
                 if (imgUri==null){
 
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    STORAGE_PERMISSION_CODE);
+                        } else {
+                            startGallery();
+                        }
+                    } else
+                        startGallery();
 
                 }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(adventure.this);
@@ -374,6 +384,45 @@ public class adventure extends AppCompatActivity implements Communicator {
         });
     }
 
+    private void startGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
+    }
+
+    private void startCamera() {
+
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,15);
+
+        takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY,0.5);
+
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startCamera();
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startGallery();
+            } else {
+                Toast.makeText(this, "storage permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {

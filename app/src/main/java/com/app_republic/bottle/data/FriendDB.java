@@ -3,6 +3,7 @@ package com.app_republic.bottle.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -30,16 +31,22 @@ public final class FriendDB {
 
 
     public long addFriend(Friend friend) {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(FeedEntry.COLUMN_NAME_ID, friend.id);
-        values.put(FeedEntry.COLUMN_NAME_NAME, friend.name);
-        values.put(FeedEntry.COLUMN_NAME_EMAIL, friend.email);
-        values.put(FeedEntry.COLUMN_NAME_ID_ROOM, friend.idRoom);
-        values.put(FeedEntry.COLUMN_NAME_AVATA, friend.avatar);
-        // Insert the new row, returning the primary key value of the new row
-        return db.insert(FeedEntry.TABLE_NAME, null, values);
+        try {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            // Create a new map of values, where column names are the keys
+            ContentValues values = new ContentValues();
+            values.put(FeedEntry.COLUMN_NAME_ID, friend.id);
+            values.put(FeedEntry.COLUMN_NAME_NAME, friend.name);
+            values.put(FeedEntry.COLUMN_NAME_EMAIL, friend.email);
+            values.put(FeedEntry.COLUMN_NAME_ID_ROOM, friend.idRoom);
+            values.put(FeedEntry.COLUMN_NAME_AVATA, friend.avatar);
+            // Insert the new row, returning the primary key value of the new row
+            return db.insert(FeedEntry.TABLE_NAME, null, values);
+        } catch (SQLiteConstraintException e) {
+            e.printStackTrace();
+        }
+        return 0;
+
     }
 
 

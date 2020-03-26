@@ -11,12 +11,20 @@
             android:id="@+id/friends_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@id/random"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="15dp"
             android:visibility="invisible">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycleListFriend"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:fadingEdge="vertical"
+                android:fadingEdgeLength="3dp"
+                android:requiresFadingEdge="vertical"
                 android:visibility="visible" />
 
         </RelativeLayout>
@@ -25,9 +33,10 @@
             android:id="@+id/empty_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/empty">
 
@@ -40,6 +49,38 @@
                 android:text="@string/empty_friends"
                 android:textSize="24sp" />
         </RelativeLayout>
+
+        <Button
+            android:id="@+id/chat_rooms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/but_see_profile"
+            android:drawableEnd="@drawable/ic_comment"
+            android:drawablePadding="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="Chat rooms"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/but_see_profile"
+            android:drawableRight="@drawable/ic_dice"
+            android:drawablePadding="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="Random chat"
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 

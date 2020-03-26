@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.Adventure;
+import com.app_republic.bottle.util.Static;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -188,7 +189,10 @@ public class World extends Fragment {
                 String stravata = list.get(position).avatar;
 
                 if (!stravata.equals(StaticConfig.STR_DEFAULT)) {
-                    Picasso.get().load(stravata).into(((viewHolder) holder).avatar);
+                    Picasso.get().load(stravata)
+                            .fit()
+                            .centerInside()
+                            .into(((viewHolder) holder).avatar);
 
                 } else {
                     ((viewHolder) holder).avatar.setImageDrawable(AppCompatResources.getDrawable(getActivity(), R.drawable.default_avata));
@@ -203,13 +207,16 @@ public class World extends Fragment {
                 ((viewHolder) holder).body.setText(list.get(position).text);
                 ((viewHolder) holder).time.setText(dateString);
                 ((viewHolder) holder).likes.setText(Integer.toString(list.get(position).likes));
-                setBackground(((viewHolder)holder).bac,list.get(position).paper);
+                setBackground(((viewHolder) holder).bac, list.get(position).paper);
 
             } else if (holder instanceof viewHolder_photo) {
                 String stravata = list.get(position).avatar;
 
                 if (!stravata.equals(StaticConfig.STR_DEFAULT)) {
-                    Picasso.get().load(stravata).into(((viewHolder_photo)holder).avatar);
+                    Picasso.get().load(stravata)
+                            .fit()
+                            .centerInside()
+                            .into(((viewHolder_photo) holder).avatar);
                 } else {
                     ((viewHolder_photo) holder).avatar.setImageDrawable(AppCompatResources.getDrawable(getActivity(), R.drawable.default_avata));
 
@@ -222,9 +229,12 @@ public class World extends Fragment {
                 ((viewHolder_photo) holder).title.setText(list.get(position).title);
                 ((viewHolder_photo) holder).time.setText(dateString);
                 ((viewHolder_photo) holder).likes.setText(Integer.toString(list.get(position).likes));
-                setBackground(((viewHolder_photo)holder).bac,list.get(position).paper);
+                setBackground(((viewHolder_photo) holder).bac, list.get(position).paper);
 
-                Picasso.get().load(list.get(position).image).into(((viewHolder_photo) holder).imageView);
+                Picasso.get().load(list.get(position).image)
+                        .fit()
+                        .centerInside()
+                        .into(((viewHolder_photo) holder).imageView);
 
             }
         }
@@ -332,14 +342,18 @@ public class World extends Fragment {
             });
         }
     }
+
     public void show_adventure(final Adventure adventure) {
         receivedAdventure dialog = new receivedAdventure();
         Bundle argumants = new Bundle();
-        argumants.putParcelable("adventure",adventure);
+        argumants.putParcelable("adventure", adventure);
 
         dialog.setArguments(argumants);
-        if(!getActivity().isDestroyed() && !getActivity().isFinishing())
-            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "received_adventure").commitAllowingStateLoss();
+        if (!getActivity().isDestroyed() && !getActivity().isFinishing())
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(Static.FRAGMENT_COMMENTS)
+
+                    .add(R.id.container, dialog, "received_adventure").commitAllowingStateLoss();
 
     }
 

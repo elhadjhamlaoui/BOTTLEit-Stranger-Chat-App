@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toStartOf="@id/like"
+        app:backgroundTint="@color/colorCardView"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_comment_blue" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/translate"
@@ -13,9 +28,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        app:srcCompat="@drawable/language"
         app:backgroundTint="@color/colorCardView"
-        app:fabSize="normal" />
+        app:fabSize="normal"
+        app:srcCompat="@drawable/language" />
 
     <RelativeLayout
         android:id="@+id/user"
@@ -29,11 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_margin="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:clickable="true"
             android:tint="@color/cardview_dark_background"
             app:backgroundTint="@color/cardview_light_background"
@@ -79,10 +93,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/user"
         android:background="@drawable/paper3"
-        android:paddingBottom="65dp"
-        android:paddingEnd="40dp"
         android:paddingStart="50dp"
         android:paddingTop="50dp"
+        android:paddingEnd="40dp"
+        android:paddingBottom="65dp"
         android:scrollbars="vertical">
 
         <ScrollView
@@ -101,8 +115,8 @@
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
                     android:gravity="end"
                     android:text="date" />
 

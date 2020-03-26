@@ -15,10 +15,10 @@
             android:layout_height="140dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="55dp"
-            app:srcCompat="@drawable/account_large"
+            android:layout_marginTop="40dp"
             app:civ_border_color="@color/blue_trans2"
-            app:civ_border_width="15dp" />
+            app:civ_border_width="15dp"
+            app:srcCompat="@drawable/account_large" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/gold"
@@ -74,10 +74,14 @@
 
 
     <android.support.v7.widget.CardView
+        android:id="@+id/items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="20dp"
         app:cardElevation="3dp">
@@ -119,6 +123,35 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="5dp"
                         android:text="10 bottles"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/compass_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toEndOf="@+id/feather_layout"
+                    android:background="@drawable/but_cn3"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/compass"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        app:srcCompat="@drawable/ic_compass" />
+
+                    <TextView
+                        android:id="@+id/compass_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/compass"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="10 compass"
                         android:textSize="12sp" />
                 </RelativeLayout>
 
@@ -253,6 +286,20 @@
         android:paddingEnd="10dp"
         android:text="Show profile"
         android:textColor="@color/colorCardView" />
+
+    <FrameLayout
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/show_profile"
+        android:layout_below="@id/items"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:scrollbars="vertical">
+
+    </FrameLayout>
 
 
 </RelativeLayout>

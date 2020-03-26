@@ -1,14 +1,18 @@
 package com.app_republic.bottle.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.text.emoji.widget.EmojiEditText;
+import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
@@ -49,9 +53,6 @@ import java.io.File;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
-import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
-import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 import static com.app_republic.bottle.ui.ChatActivity.VIEW_TYPE_FRIEND_MESSAGE_image;
 import static com.app_republic.bottle.ui.ChatActivity.VIEW_TYPE_FRIEND_MESSAGE_text;
@@ -62,6 +63,9 @@ import static com.app_republic.bottle.ui.ChatActivity.VIEW_TYPE_USER_MESSAGE_vid
 
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int STORAGE_PERMISSION_CODE = 6;
+    private static final int CAMERA_PERMISSION_CODE = 7;
+
     private final int REQUEST_IMAGE_CAPTURE = 0;
     private final int REQUEST_VIDEO_CAPTURE = 1;
     RelativeLayout imageLayout, videoLayout;
@@ -77,14 +81,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String idFriend;
     private Consersation consersation;
     private ImageView btnSend, imageSend, videoSend;
-    private EmojiconEditText editWriteMessage;
+    private EmojiEditText editWriteMessage;
     private LinearLayoutManager linearLayoutManager;
     public static HashMap<String, String> bitmapAvataFriend;
-    EmojIconActions emojIcon;
+    //EmojIconActions emojIcon;
     LottieAnimationView animationView;
     TextView FriendName;
     ImageView back;
     CircleImageView avatar;
+    boolean emojiOpened = false;
 
 
     private void setImageAvatar(String url) {
@@ -132,12 +137,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         textView2.setTypeface(type);
 
 
-        emojIcon = new EmojIconActions(this, root, editWriteMessage, em);
+        /*emojIcon = new EmojIconActions(this, root, editWriteMessage, em);
         emojIcon.setIconsIds(R.drawable.keyboard, R.drawable.smiling);
-        emojIcon.setUseSystemEmoji(true);
+        emojIcon.setUseSystemEmoji(true);*/
 
 
-        emojIcon.ShowEmojIcon();
+        //emojIcon.ShowEmojIcon();
+
+        /*em.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (emojiOpened) {
+                    emojIcon.closeEmojIcon();
+                    emojiOpened = false;
+                } else {
+                    emojIcon.ShowEmojIcon();
+                    emojiOpened = true;
+                }
+            }
+        });*/
 
         Toolbar toolbar = findViewById(R.id.my_toolbar);
 
@@ -252,30 +270,79 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 FirebaseDatabase.getInstance().getReference().child("message/" + roomId).push().setValue(newMessage);
             }
         } else if (view.getId() == R.id.add_image) {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
 
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            STORAGE_PERMISSION_CODE);
+                } else {
+                    startGallery();
+                }
+            } else
+                startGallery();
 
 
         } else if (view.getId() == R.id.add_video) {
-            if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
 
-                Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                CAMERA_PERMISSION_CODE);
+                    } else {
+                        startCamera();
+                    }
+                } else
+                    startCamera();
 
-                takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0.5);
-
-                if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-                }
 
             }
 
         }
     }
+
+    private void startGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
+    }
+
+    private void startCamera() {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
+
+        takeVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0.5);
+
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startCamera();
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startGallery();
+            } else {
+                Toast.makeText(this, "storage permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -471,18 +538,16 @@ class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (getItemViewType(position) == VIEW_TYPE_FRIEND_MESSAGE_text) {
                 ((ItemMessageFriendHolder) holder).txtContent.setText(consersation.getListMessageData().get(position).text);
-                if (consersation.getListMessageData().get(position).text.contains(context.getString(R.string.deleted_friend))){
+                if (consersation.getListMessageData().get(position).text.contains(context.getString(R.string.deleted_friend))) {
                     ((ItemMessageFriendHolder) holder).txtContent.setBackgroundResource(R.drawable.rounded_corner2_red);
 
 
-                    ((ItemMessageFriendHolder) holder).txtContent.setPadding(padding_in_px,padding_in_px,padding_in_px,padding_in_px);
+                    ((ItemMessageFriendHolder) holder).txtContent.setPadding(padding_in_px, padding_in_px, padding_in_px, padding_in_px);
 
-                }
-
-                else {
+                } else {
 
                     ((ItemMessageFriendHolder) holder).txtContent.setBackgroundResource(R.drawable.rounded_corner2);
-                    ((ItemMessageFriendHolder) holder).txtContent.setPadding(padding_in_px,padding_in_px,padding_in_px,padding_in_px);
+                    ((ItemMessageFriendHolder) holder).txtContent.setPadding(padding_in_px, padding_in_px, padding_in_px, padding_in_px);
 
                 }
 
@@ -679,7 +744,7 @@ class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 }
 
 class ItemMessageUserHolder extends RecyclerView.ViewHolder {
-    public EmojiconTextView txtContent;
+    public EmojiTextView txtContent;
     public CircleImageView avatar;
     public ImageView imageView;
 
@@ -694,7 +759,7 @@ class ItemMessageUserHolder extends RecyclerView.ViewHolder {
 }
 
 class ItemMessageFriendHolder extends RecyclerView.ViewHolder {
-    public EmojiconTextView txtContent;
+    public EmojiTextView txtContent;
     public CircleImageView avatar;
     public ImageView imageView;
 

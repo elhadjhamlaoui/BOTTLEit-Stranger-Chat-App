@@ -27,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mukesh.countrypicker.CountryPicker;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +47,7 @@ public class mybottles extends AppCompatActivity implements Communicator {
     private TextView number;
     private RelativeLayout  animation;
     private LottieAnimationView animationView;
+
 
 
 
@@ -91,7 +94,9 @@ public class mybottles extends AppCompatActivity implements Communicator {
                     number.setText(dataSnapshot.getChildrenCount() + " bottles floating");
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    bottles.add(new Bottle_view(data));
+                    Bottle_view bottle_view = new Bottle_view(data);
+                    if (bottle_view.getLastReceiver() != null)
+                    bottles.add(bottle_view);
                 }
                 Collections.reverse(bottles);
                 adapter.notifyDataSetChanged();
@@ -137,17 +142,22 @@ public class mybottles extends AppCompatActivity implements Communicator {
             Bottle_view bottle = list.get(position);
             Receiver last = bottle.getLastReceiver();
 
-            if (last != null) {
-                String country = last.getCountry();
+            try {
+                if (last != null) {
+                    String country = last.getCountry();
 
-                ((viewHolder) holder).country.setText(picker.getCountryByISO(country).getName());
-                ((viewHolder) holder).date.setText(getDate(System.currentTimeMillis() - last.getTimeStamp()) + getString(R.string.ago));
-                ((viewHolder) holder).icon.setImageResource(picker.getCountryByISO(country).getFlag());
-            } else {
-                ((viewHolder) holder).country.setText(getString(R.string.still_floating));
-                ((viewHolder) holder).date.setText(getString(R.string.sent) +" "+ getDate(System.currentTimeMillis() - bottle.time) + getString(R.string.ago));
-                ((viewHolder) holder).icon.setImageResource(R.drawable.bottle_home);
+                    ((viewHolder) holder).country.setText(picker.getCountryByISO(country).getName());
+                    ((viewHolder) holder).date.setText(getDate(System.currentTimeMillis() - last.getTimeStamp()) + getString(R.string.ago));
+                    ((viewHolder) holder).icon.setImageResource(picker.getCountryByISO(country).getFlag());
+                } else {
+                    ((viewHolder) holder).country.setText(getString(R.string.still_floating));
+                    ((viewHolder) holder).date.setText(getString(R.string.sent) +" "+ getDate(System.currentTimeMillis() - bottle.time) + getString(R.string.ago));
+                    ((viewHolder) holder).icon.setImageResource(R.drawable.bottle_home);
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
+
 
         }
 

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,7 +22,10 @@ import com.app_republic.bottle.data.SharedPreferenceHelper;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.User;
 import com.app_republic.bottle.service.ServiceUtils;
+import com.app_republic.bottle.util.UnifiedNativeAdViewHolder;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,12 +43,13 @@ public class UserFragment extends Fragment {
 
     CircleImageView picture;
     FloatingActionButton ship, gold, bottles;
-    TextView bottle_text, reputation_text, owl_text, feather_text, followers_text;
+    TextView bottle_text, reputation_text, owl_text, feather_text, followers_text, compass_text;
     DatabaseReference reference;
     SharedPreferenceHelper prefHelper;
     User myAccount;
     Button show_profile;
-    RelativeLayout bottles_layout,reputation_layout,followers_layout,feathers_layout,owls_layout;
+    RelativeLayout bottles_layout,reputation_layout,
+            followers_layout,feathers_layout,owls_layout, compass_layout;
 
     @Nullable
     @Override
@@ -62,12 +67,14 @@ public class UserFragment extends Fragment {
         owl_text = view.findViewById(R.id.owl_text);
         feather_text = view.findViewById(R.id.feather_text);
         followers_text = view.findViewById(R.id.followers_text);
+        compass_text = view.findViewById(R.id.compass_text);
 
         bottles_layout = view.findViewById(R.id.bottles_layout);
         reputation_layout = view.findViewById(R.id.reputation_layout);
         owls_layout = view.findViewById(R.id.owl_layout);
         feathers_layout = view.findViewById(R.id.feather_layout);
         followers_layout = view.findViewById(R.id.followers_layout);
+        compass_layout = view.findViewById(R.id.compass_layout);
 
         String uid = SharedPreferenceHelper.getInstance(getContext()).getUID();
         reference = FirebaseDatabase.getInstance().getReference().child("user").child(uid);
@@ -124,6 +131,20 @@ public class UserFragment extends Fragment {
 
             }
         });
+
+        reference.child("compass").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null)
+                    compass_text.setText(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         reference.child("followers").addValueEventListener(new ValueEventListener() {
             @Override
@@ -208,6 +229,15 @@ public class UserFragment extends Fragment {
 
             }
         });
+
+        compass_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showToolTip(getString(R.string.compass),getString(R.string.compass_desc));
+
+            }
+        });
+
         followers_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -215,17 +245,38 @@ public class UserFragment extends Fragment {
 
             }
         });
-        reputation_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showToolTip(getString(R.string.reputation),getString(R.string.reputation_desc));
+        reputation_layout.setOnClickListener(view1 -> showToolTip(getString(R.string.reputation),getString(R.string.reputation_desc)));
 
-            }
-        });
-
+        FrameLayout adView = view.findViewById(R.id.adView);
+        loadNativeAd(adView);
 
 
         return view;
+
+    }
+
+    public void loadNativeAd(FrameLayout frameLayout) {
+        String admob_native_id = SharedPreferenceHelper.getInstance(getActivity()).getNativeAdId();
+
+        AdLoader loader = new AdLoader.Builder(getActivity(), admob_native_id)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+
+                    View unifiedNativeLayoutView = LayoutInflater.from(
+                            getActivity()).inflate(R.layout.ad_unified, frameLayout, false);
+                    UnifiedNativeAdViewHolder holder = new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
+
+                    UnifiedNativeAdViewHolder.populateNativeAdView(unifiedNativeAd,
+                            holder.getAdView());
+
+                    frameLayout.removeAllViews();
+                    frameLayout.addView(unifiedNativeLayoutView);
+
+                })
+
+                .build();
+
+        loader.loadAd(new AdRequest.Builder().build());
+
 
     }
 

@@ -55,9 +55,14 @@ public class ShipActivity extends AppCompatActivity implements UpdateInterface {
         recyclerView.setAdapter(adapter);
         recyclerView.setFocusable(false);
 
-        items.add(new Item("bottles","1 Bottle",getString(R.string.bottle_desc),R.drawable.pack,5));
-        items.add(new Item("owls","1 Owl",getString(R.string.owl_desc),R.drawable.owl2,5));
-        items.add(new Item("feathers","1 Feather",getString(R.string.feather_desc),R.drawable.wings,2));
+        items.add(new Item("bottles","1 Bottle",getString(R.string.bottle_desc),R.drawable.pack,5, 1));
+        items.add(new Item("bottles","5 Bottles",getString(R.string.bottle_desc),R.drawable.pack,25, 5));
+        items.add(new Item("owls","1 Owl",getString(R.string.owl_desc),R.drawable.owl2,5, 1));
+        items.add(new Item("owls","5 Owls",getString(R.string.owl_desc),R.drawable.owl2,25, 5));
+        items.add(new Item("feathers","1 Feather",getString(R.string.feather_desc),R.drawable.wings,5, 1));
+        items.add(new Item("feathers","5 Feather",getString(R.string.feather_desc),R.drawable.wings,25, 5));
+        items.add(new Item("compass","1 Compass",getString(R.string.compass_desc),R.drawable.ic_compass,15, 1));
+        items.add(new Item("compass","3 Compass",getString(R.string.compass_desc),R.drawable.ic_compass,45, 3));
 
         adapter.notifyDataSetChanged();
 
@@ -129,6 +134,7 @@ public class ShipActivity extends AppCompatActivity implements UpdateInterface {
                     args.putString("desc",items.get(getAdapterPosition()).getDesc());
                     args.putInt("price",items.get(getAdapterPosition()).getPrice());
                     args.putInt("icon",items.get(getAdapterPosition()).getIcon());
+                    args.putInt("count",items.get(getAdapterPosition()).getCount());
 
                     dialog.setArguments(args);
                     dialog.show(getSupportFragmentManager(), "item");

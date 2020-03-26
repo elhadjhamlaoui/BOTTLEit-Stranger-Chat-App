@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.Adventure;
+import com.app_republic.bottle.util.Static;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -214,7 +215,10 @@ public class filterFriends extends Fragment {
                 String stravata = list.get(position).avatar;
 
                 if (!stravata.equals(StaticConfig.STR_DEFAULT)) {
-                    Picasso.get().load(stravata).into(((viewHolder)holder).avatar);
+                    Picasso.get().load(stravata)
+                            .fit()
+                            .centerInside()
+                            .into(((viewHolder)holder).avatar);
                 }else{
                     ((viewHolder)holder).avatar.setImageDrawable(AppCompatResources.getDrawable(getActivity(), R.drawable.account_white_small));
 
@@ -237,7 +241,10 @@ public class filterFriends extends Fragment {
                 String stravata = list.get(position).avatar;
 
                 if (!stravata.equals(StaticConfig.STR_DEFAULT)) {
-                    Picasso.get().load(stravata).into(((viewHolder_photo)holder).avatar);
+                    Picasso.get().load(stravata)
+                            .fit()
+                            .centerInside()
+                            .into(((viewHolder_photo)holder).avatar);
 
                 }else{
                     ((viewHolder_photo)holder).avatar.setImageDrawable(AppCompatResources.getDrawable(getActivity(), R.drawable.account_white_small));
@@ -254,7 +261,10 @@ public class filterFriends extends Fragment {
                 ((viewHolder_photo)holder).likes.setText(Integer.toString(list.get(position).likes));
                 setBackground(((viewHolder_photo)holder).bac,list.get(position).paper);
 
-                Picasso.get().load(list.get(position).image).into(((viewHolder_photo)holder).imageView);
+                Picasso.get().load(list.get(position).image)
+                        .fit()
+                        .centerInside()
+                        .into(((viewHolder_photo)holder).imageView);
 
             }
         }
@@ -348,7 +358,10 @@ public class filterFriends extends Fragment {
 
         dialog.setArguments(argumants);
         if(!getActivity().isDestroyed() && !getActivity().isFinishing())
-            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "received_adventure").commitAllowingStateLoss();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(Static.FRAGMENT_COMMENTS)
+
+                    .add(R.id.container, dialog, "received_adventure").commitAllowingStateLoss();
 
     }
 }

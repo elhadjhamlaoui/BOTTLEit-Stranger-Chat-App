@@ -1,11 +1,13 @@
 package com.app_republic.bottle.ui;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.SharedPreferenceHelper;
@@ -38,6 +41,8 @@ import java.io.File;
  */
 
 public class newBottle extends AppCompatActivity {
+    private static final int CAMERA_PERMISSION_CODE = 6;
+    private static final int STORAGE_PERMISSION_CODE = 7;
     FloatingActionButton style, send, video, image;
     FloatingActionButton f0, f1, f2, f3, f4, f5, f6, f7, f8, f10, f11, f12, f13, f14, f15, f16;
     FloatingActionButton float1, float2, float3, float4, float5, float6, float7, float8, float9, float10;
@@ -258,17 +263,18 @@ public class newBottle extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 if (vdoUri == null) {
-                    if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                    if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
 
-                        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
-
-                        takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0.5);
-
-                        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-                        }
-
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (checkSelfPermission(Manifest.permission.CAMERA)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                        CAMERA_PERMISSION_CODE);
+                            } else {
+                                startCamera();
+                            }
+                        } else
+                            startCamera();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(newBottle.this);
@@ -290,12 +296,17 @@ public class newBottle extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (imgUri == null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    STORAGE_PERMISSION_CODE);
+                        } else {
+                            startGallery();
+                        }
+                    } else
+                        startGallery();
 
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
 
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(newBottle.this);
@@ -565,7 +576,48 @@ public class newBottle extends AppCompatActivity {
             }
 
         } else if (requestCode == StaticConfig.REQUEST_CODE_BOTTLE && resultCode == RESULT_OK) {
+            setResult(RESULT_OK, new Intent());
             finish();
+        }
+    }
+
+    private void startGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_CAPTURE);
+    }
+
+    private void startCamera() {
+
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15);
+
+        takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0.5);
+
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startCamera();
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                startGallery();
+            } else {
+                Toast.makeText(this, "storage permission denied", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

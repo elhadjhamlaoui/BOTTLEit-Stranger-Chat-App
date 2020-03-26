@@ -1,21 +1,25 @@
 package com.app_republic.bottle.ui;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +57,7 @@ import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.User;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.yarolegovich.lovelydialog.LovelyInfoDialog;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 
@@ -137,6 +142,30 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
             }
         });
 
+        final RelativeLayout rootLayout = findViewById(R.id.root);
+       /* fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rootLayout.isAttachedToWindow())
+                clickRegisterLayout(v);
+            }
+        });*/
+
+        fab.hide();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fab.show();
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (rootLayout.isAttachedToWindow())
+                            clickRegisterLayout(v);
+                    }
+                });
+            }
+        }, 2000);
+
 
     }
 
@@ -161,12 +190,22 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
 
                         LoginActivity.this.finish();
                     }
+
+
                 }
                 firstTimeAccess = false;
+
+
             }
         };
 
         waitingDialog = new LovelyProgressDialog(this).setCancelable(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     @Override
@@ -482,42 +521,61 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
          */
         void saveUserInfo() {
             FirebaseInstanceId.getInstance().getInstanceId()
-                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                            if (!task.isSuccessful()) {
-                                return;
-                            }
-
-                            String token = task.getResult().getToken();
-                            FirebaseDatabase.getInstance().getReference().child("user/" + StaticConfig.UID).child("token").setValue(token).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        FirebaseDatabase.getInstance().getReference().child("user/" + StaticConfig.UID).addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                waitingDialog.dismiss();
-                                                User userInfo = dataSnapshot.getValue(User.class);
-                                                SharedPreferenceHelper.getInstance(LoginActivity.this).saveUserInfo(userInfo);
-                                                LoginActivity.this.finish();
-                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
-                                                overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-
-
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            return;
                         }
+
+                        String token = task.getResult().getToken();
+                        FirebaseDatabase.getInstance().getReference().child("user/" + StaticConfig.UID).child("token").setValue(token).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    FirebaseDatabase.getInstance().getReference().child("user/" + StaticConfig.UID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            waitingDialog.dismiss();
+                                            User userInfo = dataSnapshot.getValue(User.class);
+                                            SharedPreferenceHelper.getInstance(LoginActivity.this).saveUserInfo(userInfo);
+
+
+                                            FirebaseDatabase.getInstance().getReference().child("settings").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    SharedPreferenceHelper.getInstance(LoginActivity.this)
+                                                            .saveAdmobId(dataSnapshot.child("admob_reward_unit_id").getValue().toString());
+                                                    SharedPreferenceHelper.getInstance(LoginActivity.this)
+                                                            .saveAdmobNativeId(dataSnapshot.child("admob_native_unit_id").getValue().toString());
+
+                                                    FirebaseMessaging.getInstance().subscribeToTopic("all")
+                                                            .addOnCompleteListener(task -> {
+                                                                LoginActivity.this.finish();
+                                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+
+                                                                overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+                                                            });
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+
                     });
 
 
@@ -533,7 +591,29 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
     }
 
     public void findCountry(final User newUser) {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(null);
+        String countryCodeValue;
+        if (getSystemService(Context.TELEPHONY_SERVICE) != null) {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            countryCodeValue = tm.getNetworkCountryIso();
+        } else {
+            countryCodeValue = getResources().getConfiguration().locale.getCountry();
+        }
+
+        newUser.country = countryCodeValue;
+        FirebaseDatabase.getInstance().getReference().child("user/" + user.getUid()).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Register and Login success", Toast.LENGTH_SHORT).show();
+                    authUtils.saveUserInfo();
+                }
+            }
+        });
+
+
+        /*RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://ip-api.com/json";
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(null);
@@ -571,5 +651,6 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         });
 
         queue.add(stringRequest);
+         */
     }
 }

@@ -22,6 +22,8 @@ public class SharedPreferenceHelper {
     private static String SHARE_KEY_languages = "languages";
     private static String SHARE_KEY_birthdate = "birthdate";
     private static String SHARE_KEY_admob = "admob";
+    private static String SHARE_KEY_admob_native = "admob_native";
+
 
     private static String SHARE_KEY_country = "country";
     private static String SHARE_KEY_gender = "gender";
@@ -32,6 +34,7 @@ public class SharedPreferenceHelper {
     private static String SHARE_KEY_bottles = "bottles";
     private static String SHARE_KEY_owls = "owls";
     private static String SHARE_KEY_feathers = "feathers";
+    private static String SHARE_KEY_compass = "compass";
 
     private SharedPreferenceHelper() {
     }
@@ -67,6 +70,7 @@ public class SharedPreferenceHelper {
         editor.putInt(SHARE_KEY_gold, user.gold);
         editor.putInt(SHARE_KEY_reputation, user.reputation);
         editor.putInt(SHARE_KEY_feathers, user.feathers);
+        editor.putInt(SHARE_KEY_compass, user.compass);
 
         editor.putString(SHARE_KEY_interests, user.interests);
         editor.putString(SHARE_KEY_languages, user.languages);
@@ -92,6 +96,7 @@ public class SharedPreferenceHelper {
         int bottles = preferences.getInt(SHARE_KEY_bottles, 0);
         int owls = preferences.getInt(SHARE_KEY_owls, 0);
         int feathers = preferences.getInt(SHARE_KEY_feathers, 0);
+        int compass = preferences.getInt(SHARE_KEY_compass, 0);
 
         User user = new User();
         user.name = userName;
@@ -110,6 +115,7 @@ public class SharedPreferenceHelper {
         user.bottles = bottles;
         user.owls = owls;
         user.feathers = feathers;
+        user.compass = compass;
 
         return user;
     }
@@ -127,4 +133,13 @@ public class SharedPreferenceHelper {
         editor.commit();
     }
 
+
+
+    public String getNativeAdId() {
+        return preferences.getString(SHARE_KEY_admob_native, "ca-app-pub-5411690074381837/9064007933");
+    }
+    public void saveAdmobNativeId(String id) {
+        editor.putString(SHARE_KEY_admob_native, id);
+        editor.commit();
+    }
 }
