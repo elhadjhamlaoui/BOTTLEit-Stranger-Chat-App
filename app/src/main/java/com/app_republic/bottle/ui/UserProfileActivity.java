@@ -553,6 +553,7 @@ public class UserProfileActivity extends AppCompatActivity implements info_inter
         }
 
         void resetPassword(final String email) {
+            if (email != null && email.isEmpty())
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

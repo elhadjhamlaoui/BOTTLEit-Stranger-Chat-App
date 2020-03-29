@@ -4,7 +4,6 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,12 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.app_republic.bottle.service.DateInterface;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -38,6 +31,10 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -46,6 +43,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,21 +54,19 @@ import com.app_republic.bottle.data.SharedPreferenceHelper;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.User;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.yarolegovich.lovelydialog.LovelyInfoDialog;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class LoginActivity extends AppCompatActivity implements DateInterface {
+public class LoginActivity extends AppCompatActivity implements DateInterface, View.OnClickListener {
+    private static final int RC_SIGN_IN = 11;
     private static String TAG = "LoginActivity";
     FloatingActionButton fab;
     private final Pattern VALID_EMAIL_ADDRESS_REGEX =
@@ -86,13 +82,28 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
     private static final String EMAIL = "email";
     LoginButton loginButton;
     TextView privacy;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        //printHashKey(this);
     }
 
+    /*public static void printHashKey(Context pContext) {
+        try {
+            PackageInfo info = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.wtf("hash", "printHashKey() Hash Key: " + hashKey);
+            }
+        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
+        }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +118,13 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         firstTimeAccess = true;
 
         callbackManager = CallbackManager.Factory.create();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
 
 
         loginButton = findViewById(R.id.login_button);
@@ -152,18 +170,15 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         });*/
 
         fab.hide();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fab.show();
-                fab.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (rootLayout.isAttachedToWindow())
-                            clickRegisterLayout(v);
-                    }
-                });
-            }
+        new Handler().postDelayed(() -> {
+            fab.show();
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (rootLayout.isAttachedToWindow())
+                        clickRegisterLayout(v);
+                }
+            });
         }, 2000);
 
 
@@ -177,26 +192,23 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         //Khoi tao thanh phan de dang nhap, dang ky
         mAuth = FirebaseAuth.getInstance();
         authUtils = new AuthUtils();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    StaticConfig.UID = user.getUid();
-                    if (firstTimeAccess) {
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+        mAuthListener = firebaseAuth -> {
+            user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                StaticConfig.UID = user.getUid();
+                if (firstTimeAccess) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 
-                        LoginActivity.this.finish();
-                    }
-
-
+                    LoginActivity.this.finish();
                 }
-                firstTimeAccess = false;
 
 
             }
+            firstTimeAccess = false;
+
+
         };
 
         waitingDialog = new LovelyProgressDialog(this).setCancelable(false);
@@ -215,6 +227,19 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                startGoogleSignin();
+                break;
+        }
+    }
+    private void startGoogleSignin() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
 
     public void clickRegisterLayout(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -222,7 +247,7 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
             getWindow().setExitTransition(null);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (view != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptions options =
                     ActivityOptions.makeSceneTransitionAnimation(this, fab, fab.getTransitionName());
             startActivityForResult(new Intent(this, RegisterActivity.class), StaticConfig.REQUEST_CODE_REGISTER, options.toBundle());
@@ -236,7 +261,11 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == StaticConfig.REQUEST_CODE_REGISTER && resultCode == RESULT_OK) {
             authUtils.createUser(data.getStringExtra(StaticConfig.STR_EXTRA_USERNAME), data.getStringExtra(StaticConfig.STR_EXTRA_PASSWORD));
-        } else {
+        } else if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            authUtils.signIn_google(task.getResult());
+        }
+        else  {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -249,6 +278,10 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
         } else {
             Toast.makeText(this, "Invalid email or empty password", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void clickSignup(View view) {
+            clickRegisterLayout(null);
     }
 
 
@@ -284,8 +317,11 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
 
         final User newUser = new User();
         newUser.birthdate = birthdate;
-        newUser.email = user.getEmail();
-        newUser.name = user.getEmail().substring(0, user.getEmail().indexOf("@"));
+        newUser.email = user.getEmail() != null ? user.getEmail() : "";
+        newUser.name = user.getEmail() != null ?
+                user.getEmail()
+                        .substring(0, user.getEmail().indexOf("@"))
+                : "name";
 
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().toString().isEmpty())
             newUser.avatar = user.getPhotoUrl().toString();
@@ -464,6 +500,47 @@ public class LoginActivity extends AppCompatActivity implements DateInterface {
                         }
                     });
         }
+
+        void signIn_google(GoogleSignInAccount result) {
+            waitingDialog
+                    .setTitle("Login....")
+                    .show();
+
+            AuthCredential credential = GoogleAuthProvider.getCredential(result.getIdToken(), null);
+            mAuth.signInWithCredential(credential)
+                    .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            waitingDialog.dismiss();
+                            if (!task.isSuccessful()) {
+                                new LovelyInfoDialog(LoginActivity.this) {
+                                    @Override
+                                    public LovelyInfoDialog setConfirmButtonText(String text) {
+                                        findView(com.yarolegovich.lovelydialog.R.id.ld_btn_confirm).setOnClickListener(view -> dismiss());
+                                        return super.setConfirmButtonText(text);
+                                    }
+                                }
+                                        .setMessage("Login failed!")
+                                        .setCancelable(false)
+                                        .setConfirmButtonText("Ok")
+                                        .show();
+                                mGoogleSignInClient.signOut();
+                            } else {
+                                user = task.getResult().getUser();
+                                if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                    initNewUserInfo();
+                                } else {
+                                    saveUserInfo();
+                                }
+
+                            }
+
+                        }
+                    });
+
+
+        }
+
 
         /**
          * Action reset password

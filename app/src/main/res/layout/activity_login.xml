@@ -35,6 +35,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
@@ -136,6 +138,22 @@
                 android:textColor="#9a9a9a"
                 android:textSize="12sp" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="25dp"
+                android:gravity="center">
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bt_shape"
+                    android:onClick="clickSignup"
+                    android:stateListAnimator="@drawable/state_list_animator_z"
+                    android:text="@string/signup"
+                    android:textColor="@color/colorPrimary" />
+            </RelativeLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -153,9 +171,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:layout_marginBottom="20dp" />
+
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

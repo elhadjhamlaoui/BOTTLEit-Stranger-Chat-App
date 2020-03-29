@@ -116,5 +116,6 @@
     <string name="need_compass_3">you need 3 compasses!</string>
     <string name="comments">Comments</string>
     <string name="add_comment">Aa</string>
+    <string name="signup">New Account</string>
 
 </resources>

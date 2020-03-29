@@ -185,8 +185,8 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
             startActivity(new Intent(getActivity(), CountriesActivity.class));
         });
         BT_random.setOnClickListener(v -> {
-            //Toast.makeText(getActivity(), "Comming soon", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getActivity(), RandomChat.class));
+            Toast.makeText(getActivity(), "Comming soon", Toast.LENGTH_SHORT).show();
+           // startActivity(new Intent(getActivity(), RandomChat.class));
         });
         return layout;
     }

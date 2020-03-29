@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.wrld:wrld-android-sdk:0.0.1071@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/57315d706f3f056390d51b905d9cea6d/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/57315d706f3f056390d51b905d9cea6d/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/438547b1b7a5ff20c918891601878ed2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/wrld-android-sdk-0.0.1071.aar/438547b1b7a5ff20c918891601878ed2/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
