@@ -60,14 +60,12 @@ import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class LoginActivity extends AppCompatActivity implements DateInterface, View.OnClickListener {
     private static final int RC_SIGN_IN = 11;
-    private static String TAG = "LoginActivity";
     FloatingActionButton fab;
     private final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -120,6 +118,7 @@ public class LoginActivity extends AppCompatActivity implements DateInterface, V
         callbackManager = CallbackManager.Factory.create();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("116901023209-puuoc81lthl9jscbutang1pujofen345.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -263,7 +262,11 @@ public class LoginActivity extends AppCompatActivity implements DateInterface, V
             authUtils.createUser(data.getStringExtra(StaticConfig.STR_EXTRA_USERNAME), data.getStringExtra(StaticConfig.STR_EXTRA_PASSWORD));
         } else if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            authUtils.signIn_google(task.getResult());
+            try {
+                authUtils.signIn_google(task.getResult());
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
         else  {
             callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -508,7 +511,7 @@ public class LoginActivity extends AppCompatActivity implements DateInterface, V
 
             AuthCredential credential = GoogleAuthProvider.getCredential(result.getIdToken(), null);
             mAuth.signInWithCredential(credential)
-                    .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             waitingDialog.dismiss();
@@ -624,6 +627,9 @@ public class LoginActivity extends AppCompatActivity implements DateInterface, V
                                                     SharedPreferenceHelper.getInstance(LoginActivity.this)
                                                             .saveAdmobNativeId(dataSnapshot.child("admob_native_unit_id").getValue().toString());
 
+                                                    SharedPreferenceHelper.getInstance(LoginActivity.this)
+                                                            .saveAdmobBannerId(dataSnapshot.child("admob_banner_unit_id").getValue().toString());
+
                                                     FirebaseMessaging.getInstance().subscribeToTopic("all")
                                                             .addOnCompleteListener(task -> {
                                                                 LoginActivity.this.finish();
@@ -678,7 +684,7 @@ public class LoginActivity extends AppCompatActivity implements DateInterface, V
             countryCodeValue = getResources().getConfiguration().locale.getCountry();
         }
 
-        newUser.country = countryCodeValue;
+        newUser.country = countryCodeValue.isEmpty() ? "gb" : countryCodeValue;
         FirebaseDatabase.getInstance().getReference().child("user/" + user.getUid()).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

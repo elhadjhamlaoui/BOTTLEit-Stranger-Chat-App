@@ -2,6 +2,7 @@ package com.app_republic.bottle.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -108,6 +109,7 @@ public class adventures_dialog extends DialogFragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setAdapter(adapter);
+
 
         getAdventures(getArguments().getString("country"));
 
@@ -379,16 +381,10 @@ public class adventures_dialog extends DialogFragment {
         }
     }
     public void show_adventure(final Adventure adventure) {
-        receivedAdventure dialog = new receivedAdventure();
-        Bundle argumants = new Bundle();
-        argumants.putParcelable("adventure",adventure);
+        Intent intent = new Intent(getActivity(), receivedAdventure.class);
+        intent.putExtra("adventure", adventure);
+        startActivity(intent);
 
-        dialog.setArguments(argumants);
-        if(!getActivity().isDestroyed() && !getActivity().isFinishing())
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(Static.FRAGMENT_COMMENTS)
-
-                    .add(R.id.container,dialog, "received_adventure").commitAllowingStateLoss();
 
     }
 }

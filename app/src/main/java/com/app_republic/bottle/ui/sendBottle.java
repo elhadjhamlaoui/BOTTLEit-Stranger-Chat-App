@@ -273,12 +273,7 @@ public class sendBottle extends AppCompatActivity {
         picker.getCountryByISO("LY").setName("Libya");
 
 
-        country_selector.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                picker.showDialog(sendBottle.this);
-            }
-        });
+        country_selector.setOnClickListener(v -> picker.showDialog(sendBottle.this));
 
         gender_selector.setOnClickListener(new View.OnClickListener() {
             @Override

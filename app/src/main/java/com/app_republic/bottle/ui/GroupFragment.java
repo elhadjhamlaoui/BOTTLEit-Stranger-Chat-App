@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import com.app_republic.bottle.R;
 import com.app_republic.bottle.data.SharedPreferenceHelper;
 import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.Bottle_view;
+import com.app_republic.bottle.util.Utils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,6 +65,7 @@ public class GroupFragment extends Fragment {
         empty_layout = layout.findViewById(R.id.empty_layout);
 
         send_bottle = layout.findViewById(R.id.send_bottle);
+
         send_bottle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -222,11 +225,8 @@ public class GroupFragment extends Fragment {
         });
 
 
-
-
-
-
-
+        FrameLayout adView = layout.findViewById(R.id.adView);
+        Utils.loadNativeAd(getActivity(), adView);
 
       return layout;
     }

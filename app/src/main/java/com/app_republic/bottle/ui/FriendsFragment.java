@@ -95,6 +95,8 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         onClickFloatButton = new FragFriendClickFloatButton();
     }
 
+    private boolean isRefreshing = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +113,7 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
             @Override
             public void onTick(long l) {
                 //ServiceUtils.updateFriendStatus(getContext(), dataListFriend);
-               // ServiceUtils.updateUserStatus(getContext());
+                // ServiceUtils.updateUserStatus(getContext());
             }
 
             @Override
@@ -186,7 +188,7 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         });
         BT_random.setOnClickListener(v -> {
             Toast.makeText(getActivity(), "Comming soon", Toast.LENGTH_SHORT).show();
-           // startActivity(new Intent(getActivity(), RandomChat.class));
+            // startActivity(new Intent(getActivity(), RandomChat.class));
         });
         return layout;
     }
@@ -208,12 +210,16 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-        listFriendID.clear();
-        dataListFriend.getListFriend().clear();
-        clearListeners();
-        FriendDB.getInstance(getContext()).dropDB();
-        detectFriendOnline.cancel();
-        getListFriendUId();
+        if (!isRefreshing) {
+            isRefreshing = true;
+            listFriendID.clear();
+            dataListFriend.getListFriend().clear();
+            clearListeners();
+            FriendDB.getInstance(getContext()).dropDB();
+            detectFriendOnline.cancel();
+            getListFriendUId();
+        }
+
     }
 
     @Override
@@ -227,31 +233,31 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 .show();
         FirebaseDatabase.getInstance().getReference().child("user").child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                dialogWait.dismiss();
-                if (dataSnapshot.getValue() == null) {
-                    //user not found
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        dialogWait.dismiss();
+                        if (dataSnapshot.getValue() == null) {
+                            //user not found
 
-                } else {
-                    HashMap userMap = (HashMap) dataSnapshot.getValue();
-                    String id = uid;
-                    Friend user = new Friend();
-                    user.name = (String) userMap.get("name");
-                    user.email = (String) userMap.get("email");
-                    user.avatar = (String) userMap.get("avatar");
-                    user.id = id;
-                    user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
-                    checkBeforAddFriend(id, user, bottleId);
+                        } else {
+                            HashMap userMap = (HashMap) dataSnapshot.getValue();
+                            String id = uid;
+                            Friend user = new Friend();
+                            user.name = (String) userMap.get("name");
+                            user.email = (String) userMap.get("email");
+                            user.avatar = (String) userMap.get("avatar");
+                            user.id = id;
+                            user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
+                            checkBeforAddFriend(id, user, bottleId);
 
-                }
-            }
+                        }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                    }
+                });
     }
 
     /**
@@ -384,11 +390,14 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     dialogFindAllFriend.dismiss();
                 }
                 mSwipeRefreshLayout.setRefreshing(false);
+                isRefreshing = false;
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 mSwipeRefreshLayout.setRefreshing(false);
+                isRefreshing = false;
+
 
             }
         });
@@ -399,138 +408,145 @@ public class FriendsFragment extends Fragment implements SwipeRefreshLayout.OnRe
      */
 
     private void getAllFriendInfo(final int index) {
+
+
         if (index >= listFriendID.size()) {
             //save list friend
             adapter.notifyDataSetChanged();
             dialogFindAllFriend.dismiss();
             mSwipeRefreshLayout.setRefreshing(false);
+            isRefreshing = false;
             detectFriendOnline.start();
         } else {
-                final String id = listFriendID.get(index);
-                FirebaseDatabase.getInstance().getReference().child("user/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() != null) {
-                            final Friend user = new Friend();
-                            HashMap mapUserInfo = (HashMap) dataSnapshot.getValue();
-                            user.name = (String) mapUserInfo.get("name");
-                            user.email = (String) mapUserInfo.get("email");
-                            user.avatar = (String) mapUserInfo.get("avatar");
-                            user.id = id;
-                            user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
+            final String id = listFriendID.get(index);
+            FirebaseDatabase.getInstance().getReference().child("user/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        final Friend user = new Friend();
+                        HashMap mapUserInfo = (HashMap) dataSnapshot.getValue();
+                        user.name = (String) mapUserInfo.get("name");
+                        user.email = (String) mapUserInfo.get("email");
+                        user.avatar = (String) mapUserInfo.get("avatar");
+                        user.id = id;
+                        user.idRoom = id.compareTo(StaticConfig.UID) > 0 ? (StaticConfig.UID + id).hashCode() + "" : "" + (id + StaticConfig.UID).hashCode();
 
-                            if (!dataListFriend.getListFriend().contains(user)) {
-                                dataListFriend.getListFriend().add(user);
-                                try {
-                                    FriendDB.getInstance(getContext()).addFriend(user);
+                        if (!dataListFriend.getListFriend().contains(user)) {
+                            dataListFriend.getListFriend().add(user);
+                            try {
+                                FriendDB.getInstance(getContext()).addFriend(user);
 
 
-                                    if (mapQueryOnline.get(id) == null && mapChildListenerOnline.get(id) == null) {
-                                        mapQueryOnline.put(id, FirebaseDatabase.getInstance().getReference().child("user/" + id + "/status"));
-                                        mapChildListenerOnline.put(id, new ChildEventListener() {
-                                            @Override
-                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                                if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
-                                                    user.status.isOnline = (boolean) dataSnapshot.getValue();
-                                                    adapter.notifyDataSetChanged();
-                                                }
+                                if (mapQueryOnline.get(id) == null && mapChildListenerOnline.get(id) == null) {
+                                    mapQueryOnline.put(id, FirebaseDatabase.getInstance().getReference().child("user/" + id + "/status"));
+                                    mapChildListenerOnline.put(id, new ChildEventListener() {
+                                        @Override
+                                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                            if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
+                                                user.status.isOnline = (boolean) dataSnapshot.getValue();
+                                                adapter.notifyDataSetChanged();
+                                            } else if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("timestamp")) {
+                                                user.status.timestamp = (long) dataSnapshot.getValue();
+                                                adapter.notifyDataSetChanged();
                                             }
+                                        }
 
-                                            @Override
-                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                                                if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
-                                                    user.status.isOnline = (boolean) dataSnapshot.getValue();
-                                                    adapter.notifyDataSetChanged();
-
-
-                                                }
+                                        @Override
+                                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                            if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("isOnline")) {
+                                                user.status.isOnline = (boolean) dataSnapshot.getValue();
+                                                adapter.notifyDataSetChanged();
+                                            } else if (dataSnapshot.getValue() != null && dataSnapshot.getKey().equals("timestamp")) {
+                                                user.status.timestamp = (long) dataSnapshot.getValue();
+                                                adapter.notifyDataSetChanged();
                                             }
+                                        }
 
-                                            @Override
-                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                                        @Override
+                                        public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                                            }
+                                        }
 
-                                            @Override
-                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                                        @Override
+                                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                                            }
+                                        }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
-                                            }
-                                        });
-                                        mapQueryOnline.get(id).addChildEventListener(mapChildListenerOnline.get(id));
-                                    }
+                                        }
+                                    });
+                                    mapQueryOnline.get(id).addChildEventListener(mapChildListenerOnline.get(id));
+                                }
 
 
-                                    if (mapQuery.get(id) == null && mapChildListener.get(id) == null) {
-                                        mapQuery.put(id, FirebaseDatabase.getInstance().getReference().child("message/" + user.idRoom).limitToLast(1));
-                                        mapChildListener.put(id, new ChildEventListener() {
-                                            @Override
-                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                                HashMap mapMessage = (HashMap) dataSnapshot.getValue();
+                                if (mapQuery.get(id) == null && mapChildListener.get(id) == null) {
+                                    mapQuery.put(id, FirebaseDatabase.getInstance().getReference().child("message/" + user.idRoom).limitToLast(1));
+                                    mapChildListener.put(id, new ChildEventListener() {
+                                        @Override
+                                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                            HashMap mapMessage = (HashMap) dataSnapshot.getValue();
 
-                                                user.message.timestamp = (long) mapMessage.get("timestamp");
+                                            user.message.timestamp = (long) mapMessage.get("timestamp");
 
-                                                if (mapMark.get(id) != null) {
-                                                    if (!mapMark.get(id)) {
-                                                        user.message.text = id + mapMessage.get("text");
-                                                    } else {
-                                                        user.message.text = (String) mapMessage.get("text");
-                                                    }
-                                                    adapter.notifyDataSetChanged();
-                                                    mapMark.put(id, false);
+                                            if (mapMark.get(id) != null) {
+                                                if (!mapMark.get(id)) {
+                                                    user.message.text = id + mapMessage.get("text");
                                                 } else {
                                                     user.message.text = (String) mapMessage.get("text");
-                                                    adapter.notifyDataSetChanged();
                                                 }
-
-
+                                                adapter.notifyDataSetChanged();
+                                                mapMark.put(id, false);
+                                            } else {
+                                                user.message.text = (String) mapMessage.get("text");
+                                                adapter.notifyDataSetChanged();
                                             }
 
-                                            @Override
-                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                                            }
+                                        }
 
-                                            @Override
-                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                                        @Override
+                                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                                            }
+                                        }
 
-                                            @Override
-                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                                        @Override
+                                        public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                                            }
+                                        }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                                            }
-                                        });
-                                        mapQuery.get(id).addChildEventListener(mapChildListener.get(id));
-                                        mapMark.put(id, true);
-                                    } else {
-                                        mapMark.put(id, true);
-                                    }
-                                } catch (SQLiteConstraintException e) {
-                                    e.printStackTrace();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                    mapQuery.get(id).addChildEventListener(mapChildListener.get(id));
+                                    mapMark.put(id, true);
+                                } else {
+                                    mapMark.put(id, true);
                                 }
+                            } catch (SQLiteConstraintException e) {
+                                e.printStackTrace();
                             }
-
-
-
                         }
-                        getAllFriendInfo(index + 1);
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                    getAllFriendInfo(index + 1);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    isRefreshing = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            });
 
         }
     }
@@ -585,7 +601,6 @@ class ListFriendsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         String name = listFriend.getListFriend().get(holder.getAdapterPosition()).name;
         String id = listFriend.getListFriend().get(holder.getAdapterPosition()).id;
-
         ((ItemFriendViewHolder) holder).txtName.setText(name);
 
         ((View) ((ItemFriendViewHolder) holder).txtName.getParent().getParent().getParent())
@@ -682,7 +697,8 @@ class ListFriendsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
 
-        if (listFriend.getListFriend().get(position).status.isOnline) {
+        if (listFriend.getListFriend().get(position).status.isOnline &&
+                listFriend.getListFriend().get(position).status.timestamp > (System.currentTimeMillis() - 24 * 60 * 60 * 1000)) {
             ((ItemFriendViewHolder) holder).online.setVisibility(View.VISIBLE);
         } else {
             ((ItemFriendViewHolder) holder).online.setVisibility(View.INVISIBLE);

@@ -1,6 +1,7 @@
 package com.app_republic.bottle.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.app.Fragment;
@@ -67,6 +68,8 @@ public class World extends Fragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setAdapter(adapter);
+
+
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -344,16 +347,9 @@ public class World extends Fragment {
     }
 
     public void show_adventure(final Adventure adventure) {
-        receivedAdventure dialog = new receivedAdventure();
-        Bundle argumants = new Bundle();
-        argumants.putParcelable("adventure", adventure);
-
-        dialog.setArguments(argumants);
-        if (!getActivity().isDestroyed() && !getActivity().isFinishing())
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(Static.FRAGMENT_COMMENTS)
-
-                    .add(R.id.container, dialog, "received_adventure").commitAllowingStateLoss();
+        Intent intent = new Intent(getActivity(), receivedAdventure.class);
+        intent.putExtra("adventure", adventure);
+        startActivity(intent);
 
     }
 

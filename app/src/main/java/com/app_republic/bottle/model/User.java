@@ -8,7 +8,7 @@ public class User {
     public String interests = "",languages = "";
     public String wall = "";
     public String birthdate = "";
-    public String country = "GB";
+    public String country = "gb";
     public String gender = "";
     public String name;
     public String email;

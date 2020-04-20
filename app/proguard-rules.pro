@@ -32,6 +32,7 @@
 -dontwarn rx.**
 
 -dontwarn okio.**
+-keepnames class com.google.android.gms.** {*;}
 
 -dontwarn com.squareup.okhttp.**
 -keep class com.squareup.okhttp.** { *; }
@@ -43,7 +44,10 @@
 -keepclasseswithmembers class * {
     @retrofit.http.* <methods>;
 }
-
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 -keepattributes Signature
 -keepattributes *Annotation*
 -keep class com.app_republic.bottle.model.** { *; }

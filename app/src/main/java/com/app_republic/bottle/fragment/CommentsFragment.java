@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -186,6 +187,9 @@ public class CommentsFragment extends Fragment implements FirebaseAuth.AuthState
         else
             IV_user_photo.setImageResource(R.drawable.ic_account);
 
+
+        FrameLayout adView = view.findViewById(R.id.adView);
+        Utils.loadNativeAd(getActivity(), adView);
 
         return view;
 

@@ -23,6 +23,7 @@ public class SharedPreferenceHelper {
     private static String SHARE_KEY_birthdate = "birthdate";
     private static String SHARE_KEY_admob = "admob";
     private static String SHARE_KEY_admob_native = "admob_native";
+    private static String SHARE_KEY_admob_banner = "admob_banner";
 
 
     private static String SHARE_KEY_country = "country";
@@ -138,8 +139,15 @@ public class SharedPreferenceHelper {
     public String getNativeAdId() {
         return preferences.getString(SHARE_KEY_admob_native, "ca-app-pub-5411690074381837/9064007933");
     }
+    public String getBannerAdId() {
+        return preferences.getString(SHARE_KEY_admob_banner, "ca-app-pub-5411690074381837/9115992134");
+    }
     public void saveAdmobNativeId(String id) {
         editor.putString(SHARE_KEY_admob_native, id);
+        editor.commit();
+    }
+    public void saveAdmobBannerId(String id) {
+        editor.putString(SHARE_KEY_admob_banner, id);
         editor.commit();
     }
 }

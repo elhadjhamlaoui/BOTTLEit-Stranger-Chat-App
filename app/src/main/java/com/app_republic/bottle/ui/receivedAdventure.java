@@ -1,6 +1,5 @@
 package com.app_republic.bottle.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
@@ -10,14 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.text.emoji.widget.EmojiTextView;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -63,7 +58,7 @@ import java.util.Map;
  */
 
 
-public class receivedAdventure extends Fragment {
+public class receivedAdventure extends AppCompatActivity {
     Dialog dialog;
     static final int name = 0;
 
@@ -113,41 +108,37 @@ public class receivedAdventure extends Fragment {
 
     }*/
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.received_ad);
+        // getDialog().getWindow().setBackgroundDrawableResource(R.color.cardview_light_background);
 
-        View view = inflater.inflate(R.layout.received_ad, null);
-       // getDialog().getWindow().setBackgroundDrawableResource(R.color.cardview_light_background);
+        queue = Volley.newRequestQueue(this);
+        scrollView = findViewById(R.id.scrollView);
+        message = findViewById(R.id.message);
+        comments = findViewById(R.id.comments);
 
-        queue = Volley.newRequestQueue(getActivity());
-        scrollView = view.findViewById(R.id.scrollView);
-        message = view.findViewById(R.id.message);
-        comments = view.findViewById(R.id.comments);
+        like = findViewById(R.id.like);
 
-        like = view.findViewById(R.id.like);
-
-        video = view.findViewById(R.id.video);
-        image = view.findViewById(R.id.image);
-        translate = view.findViewById(R.id.translate);
+        video = findViewById(R.id.video);
+        image = findViewById(R.id.image);
+        translate = findViewById(R.id.translate);
 
         translate.hide();
 
-        report = view.findViewById(R.id.report);
-        picture = view.findViewById(R.id.picture);
+        report = findViewById(R.id.report);
+        picture = findViewById(R.id.picture);
 
-        nameView = view.findViewById(R.id.name);
-        date = view.findViewById(R.id.date);
-        textView = view.findViewById(R.id.text);
-        titleView = view.findViewById(R.id.title);
+        nameView = findViewById(R.id.name);
+        date = findViewById(R.id.date);
+        textView = findViewById(R.id.text);
+        titleView = findViewById(R.id.title);
 
 
         firebaseFunctions = FirebaseFunctions.getInstance();
 
-        adventure = getArguments().getParcelable("adventure");
+        adventure = getIntent().getParcelableExtra("adventure");
         loadPicture();
 
         getSupportedLanguages();
@@ -171,7 +162,7 @@ public class receivedAdventure extends Fragment {
 
 
         if (!adventure.font.equals("normal")) {
-            Typeface type = Typeface.createFromAsset(getActivity().getAssets(), "fonts/" + adventure.font);
+            Typeface type = Typeface.createFromAsset(getAssets(), "fonts/" + adventure.font);
 
 
             textView.setTypeface(type);
@@ -179,7 +170,7 @@ public class receivedAdventure extends Fragment {
 
         }
 
-        queue = Volley.newRequestQueue(getActivity());
+        queue = Volley.newRequestQueue(this);
 
 
         setBackground(adventure.paper);
@@ -206,11 +197,11 @@ public class receivedAdventure extends Fragment {
             video.setVisibility(View.VISIBLE);
 
 
-        close = view.findViewById(R.id.close);
+        close = findViewById(R.id.close);
 
 
-        close.setOnClickListener(view13 -> getActivity().onBackPressed());
-        report.setOnClickListener(view14 -> Toast.makeText(getActivity(), "Comming soon.", Toast.LENGTH_SHORT).show());
+        close.setOnClickListener(view13 -> this.onBackPressed());
+        report.setOnClickListener(view14 -> Toast.makeText(this, "Comming soon.", Toast.LENGTH_SHORT).show());
 
 
         image.setOnClickListener(view15 -> {
@@ -219,8 +210,8 @@ public class receivedAdventure extends Fragment {
             argumants.putString("image", imageText);
             dialog.setArguments(argumants);
 
-            if (!getActivity().isDestroyed() && !getActivity().isFinishing())
-                getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "image").commitAllowingStateLoss();
+            if (!this.isDestroyed() && !this.isFinishing())
+                this.getSupportFragmentManager().beginTransaction().add(dialog, "image").commitAllowingStateLoss();
         });
         video.setOnClickListener(view16 -> {
             play_video dialog = new play_video();
@@ -228,8 +219,8 @@ public class receivedAdventure extends Fragment {
             argumants.putString("video", videoText);
             dialog.setArguments(argumants);
 
-            if (!getActivity().isDestroyed() && !getActivity().isFinishing())
-                getActivity().getSupportFragmentManager().beginTransaction().add(dialog, "video").commitAllowingStateLoss();
+            if (!this.isDestroyed() && !this.isFinishing())
+                this.getSupportFragmentManager().beginTransaction().add(dialog, "video").commitAllowingStateLoss();
 
 
         });
@@ -253,7 +244,7 @@ public class receivedAdventure extends Fragment {
                     adventure);
 
             fragment.setArguments(args);
-            getActivity().getSupportFragmentManager().beginTransaction()
+            this.getSupportFragmentManager().beginTransaction()
                     .addToBackStack(Static.FRAGMENT_COMMENTS)
                     .add(R.id.container, fragment)
                     .commit();
@@ -265,7 +256,7 @@ public class receivedAdventure extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putString("uid", adventure.sender);
             dialog.setArguments(bundle);
-            dialog.show(getActivity().getSupportFragmentManager(), "profile_view");
+            dialog.show(this.getSupportFragmentManager(), "profile_view");
         });
 
         like.setOnClickListener(view12 -> {
@@ -303,7 +294,7 @@ public class receivedAdventure extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful())
-                            like.setEnabled(true);
+                                like.setEnabled(true);
                         }
                     });
 
@@ -335,35 +326,31 @@ public class receivedAdventure extends Fragment {
             }
         });
 
-        translate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        translate.setOnClickListener(view -> {
 
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
-                mBuilder.setTitle(getString(R.string.choose_language));
-                mBuilder.setSingleChoiceItems(langs, currentLang, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (i != 0) {
-                            currentLang = i;
-                            getTranslation(codes[i]);
-                        } else {
-                            textView.setText(OriginalText);
-                        }
-
-                        dialogInterface.dismiss();
-
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(receivedAdventure.this);
+            mBuilder.setTitle(getString(R.string.choose_language));
+            mBuilder.setSingleChoiceItems(langs, currentLang, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if (i != 0) {
+                        currentLang = i;
+                        getTranslation(codes[i]);
+                    } else {
+                        textView.setText(OriginalText);
                     }
-                });
 
-                AlertDialog mDialog = mBuilder.create();
-                mDialog.show();
+                    dialogInterface.dismiss();
+
+                }
+            });
+
+            AlertDialog mDialog = mBuilder.create();
+            mDialog.show();
 
 
-            }
         });
 
-        return view;
     }
 
     void getSupportedLanguages() {
@@ -407,7 +394,7 @@ public class receivedAdventure extends Fragment {
                     translate.show();
 
                 } catch (JSONException e) {
-                    Toast.makeText(getActivity(), getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(receivedAdventure.this, getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -415,7 +402,7 @@ public class receivedAdventure extends Fragment {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(receivedAdventure.this, getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
             }
         });
         request.setTag(TAG);
@@ -447,7 +434,7 @@ public class receivedAdventure extends Fragment {
                     textView.setText(translation);
 
                 } catch (JSONException e) {
-                    Toast.makeText(getActivity(), getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(receivedAdventure.this, getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -455,7 +442,7 @@ public class receivedAdventure extends Fragment {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(receivedAdventure.this, getString(R.string.translation_error), Toast.LENGTH_SHORT).show();
             }
         });
         request.setTag(TAG);
@@ -466,7 +453,7 @@ public class receivedAdventure extends Fragment {
 
     public void loadPicture() {
         if (adventure.avatar.equals(StaticConfig.STR_DEFAULT)) {
-            picture.setImageDrawable(AppCompatResources.getDrawable(getActivity(), R.drawable.default_avata));
+            picture.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.default_avata));
         } else {
             Picasso.get().load(adventure.avatar).into(picture);
         }

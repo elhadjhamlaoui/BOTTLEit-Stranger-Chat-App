@@ -1,6 +1,7 @@
 package com.app_republic.bottle.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.text.emoji.widget.EmojiTextView;
@@ -82,6 +83,7 @@ public class filterFollowing extends Fragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setAdapter(adapter);
+
 
         getAdventures();
 
@@ -352,7 +354,10 @@ public class filterFollowing extends Fragment {
         }
     }
     public void show_adventure(final Adventure adventure) {
-        receivedAdventure dialog = new receivedAdventure();
+        Intent intent = new Intent(getActivity(), receivedAdventure.class);
+        intent.putExtra("adventure", adventure);
+        startActivity(intent);
+        /*receivedAdventure dialog = new receivedAdventure();
         Bundle argumants = new Bundle();
         argumants.putParcelable("adventure",adventure);
 
@@ -362,6 +367,9 @@ public class filterFollowing extends Fragment {
                     .addToBackStack(Static.FRAGMENT_ADVENTURE)
 
                     .add(R.id.container, dialog, "received_adventure").commitAllowingStateLoss();
+
+
+         */
 
     }
 }

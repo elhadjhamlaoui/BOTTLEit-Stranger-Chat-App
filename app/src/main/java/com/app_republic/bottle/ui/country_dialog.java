@@ -115,7 +115,7 @@ public class country_dialog extends DialogFragment {
         } else {
             countryCodeValue = getResources().getConfiguration().locale.getCountry();
         }
-        user.country = countryCodeValue;
+        user.country = countryCodeValue.isEmpty() ? "gb" : countryCodeValue;
         FirebaseDatabase.getInstance().getReference().child("user").child(StaticConfig.UID).child("country").setValue(user.country).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

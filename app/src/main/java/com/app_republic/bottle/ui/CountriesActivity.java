@@ -103,7 +103,7 @@ public class CountriesActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View view = LayoutInflater.from(CountriesActivity.this)
-                    .inflate(R.layout.item_country, viewGroup, false);
+                    .inflate(R.layout.item_country2, viewGroup, false);
 
             return new ViewHolder(view);
         }

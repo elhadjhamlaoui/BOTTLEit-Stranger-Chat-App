@@ -23,6 +23,7 @@ import com.app_republic.bottle.data.StaticConfig;
 import com.app_republic.bottle.model.User;
 import com.app_republic.bottle.service.ServiceUtils;
 import com.app_republic.bottle.util.UnifiedNativeAdViewHolder;
+import com.app_republic.bottle.util.Utils;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -248,37 +249,13 @@ public class UserFragment extends Fragment {
         reputation_layout.setOnClickListener(view1 -> showToolTip(getString(R.string.reputation),getString(R.string.reputation_desc)));
 
         FrameLayout adView = view.findViewById(R.id.adView);
-        loadNativeAd(adView);
+        Utils.loadNativeAd(getActivity(), adView);
 
 
         return view;
 
     }
 
-    public void loadNativeAd(FrameLayout frameLayout) {
-        String admob_native_id = SharedPreferenceHelper.getInstance(getActivity()).getNativeAdId();
-
-        AdLoader loader = new AdLoader.Builder(getActivity(), admob_native_id)
-                .forUnifiedNativeAd(unifiedNativeAd -> {
-
-                    View unifiedNativeLayoutView = LayoutInflater.from(
-                            getActivity()).inflate(R.layout.ad_unified, frameLayout, false);
-                    UnifiedNativeAdViewHolder holder = new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
-
-                    UnifiedNativeAdViewHolder.populateNativeAdView(unifiedNativeAd,
-                            holder.getAdView());
-
-                    frameLayout.removeAllViews();
-                    frameLayout.addView(unifiedNativeLayoutView);
-
-                })
-
-                .build();
-
-        loader.loadAd(new AdRequest.Builder().build());
-
-
-    }
 
     public void showToolTip(String title, String body) {
         ToolTipDialog dialog = new ToolTipDialog();

@@ -1,11 +1,18 @@
 package com.app_republic.bottle.util;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.app_republic.bottle.R;
+import com.app_republic.bottle.data.SharedPreferenceHelper;
 import com.app_republic.bottle.model.Comment;
 import com.app_republic.bottle.model.Feeling;
+import com.app_republic.bottle.ui.Cloud;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -152,6 +159,35 @@ public class Utils {
                 return feelings.indexOf(feeling);
 
         return -1;
+
+    }
+    public static void loadNativeAd(Context context, FrameLayout frameLayout) {
+        String admob_native_id = SharedPreferenceHelper.getInstance(context).getNativeAdId();
+
+        AdLoader loader = new AdLoader.Builder(context, admob_native_id)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+
+                    if (frameLayout != null) {
+                        View unifiedNativeLayoutView = null;
+                            unifiedNativeLayoutView = LayoutInflater.from(
+                                    context).inflate(R.layout.ad_unified, frameLayout, false);
+
+                        UnifiedNativeAdViewHolder holder = new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
+
+                        UnifiedNativeAdViewHolder.populateNativeAdView(unifiedNativeAd,
+                                holder.getAdView());
+
+                        frameLayout.removeAllViews();
+                        frameLayout.addView(unifiedNativeLayoutView);
+                    }
+
+
+                })
+
+                .build();
+
+        loader.loadAd(new AdRequest.Builder().build());
+
 
     }
 

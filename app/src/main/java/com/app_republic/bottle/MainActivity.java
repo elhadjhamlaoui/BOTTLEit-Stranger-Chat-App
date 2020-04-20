@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         final DatabaseReference lastOnlineRef  = reference.child("user/"+StaticConfig.UID+"/status/timestamp");
 
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-
+        lastOnlineRef.setValue(System.currentTimeMillis());
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
                     // When I disconnect, update the last time I was seen online
                     lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
+                } else {
+                    myConnectionsRef.setValue(false);
+
                 }
             }
 
